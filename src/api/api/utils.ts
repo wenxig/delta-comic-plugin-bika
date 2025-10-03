@@ -1,0 +1,109 @@
+import { uni, Utils } from 'delta-comic-core'
+import type { bika as _bk, bika } from '..'
+import { pluginName } from '@/symbol'
+import { BikaPage } from '../page'
+
+
+export function bikaStream<T>(api: (page: number, signal: AbortSignal) => PromiseLike<bika.api.pica.RawStream<T>>) {
+  return Utils.data.Stream.create<T>(async function* (signal, that) {
+    while (true) {
+      if (that.pages.value <= that.page.value) return
+      that.page.value++
+      const result = await api(that.page.value, signal)
+      that.pages.value = result.pages
+      that.total.value = result.total
+      that.pageSize.value = result.limit
+      that.page.value = Number(result.page)
+      yield result.docs
+    }
+  })
+}
+
+export const createClassFromResponse = async<T extends Record<string, any[]>, TResult>(source: PromiseLike<T>, box: new (source: T[keyof T][number]) => TResult, key: keyof T) => {
+  const data = await source
+  const s = data[key]
+  return s.map(v => new box(v))
+}
+export const createStructFromResponse = async<T extends Record<string, any[]>, TResult>(source: PromiseLike<T>, box: (source: T[keyof T][number]) => TResult, key: keyof T) => {
+  const data = await source
+  const s = data[key]
+  return s.map(v => box(v))
+}
+
+export const createClassFromResponseStream = async<T extends Record<string, bika.api.pica.RawStream<any>>, TResult>(v: Promise<T>, box: new (data: T[keyof T]['docs'][number]) => TResult, key: keyof T = 'comics'): Promise<bika.api.pica.RawStream<TResult>> => {
+  const data = await v
+  const s = data[key]
+  s.docs = s.docs.map(v => new box(v))
+  return s
+}
+export const createStructFromResponseStream = async<T extends Record<string, bika.api.pica.RawStream<any>>, TResult>(v: Promise<T>, box: (data: T[keyof T]['docs'][number]) => TResult, key: keyof T = 'comics'): Promise<bika.api.pica.RawStream<TResult>> => {
+  const data = await v
+  const s = data[key]
+  s.docs = s.docs.map(v => box(v))
+  return s
+}
+
+export const spiltUsers = (userString = '') => userString.split(/\,|，|\&|\||、|＆|(\sand\s)|(\s和\s)|(\s[xX]\s)/ig).filter(Boolean).map(v => v.trim()).filter(Boolean)
+
+export const createFullToUniItem = (comic: bika.comic.RawFullComic) => uni.item.Item.create({
+  $$meta: {},
+  $$plugin: pluginName,
+  author: spiltUsers(comic.author),
+  categories: comic.categories.concat(comic.tags),
+  cover: {
+    $$plugin: pluginName,
+    forkNamespace: 'default',
+    path: comic.thumb.path,
+  },
+  title: comic.title,
+  id: comic._id,
+  viewNumber: comic.viewsCount,
+  likeNumber: comic.likesCount,
+  commentNumber: comic.commentsCount,
+  isLiked: comic.isLiked,
+  updateTime: Number(comic.updated_at),
+  customIsAI: false,
+  contentType: BikaPage.contentType,
+  length: String(comic.pagesCount),
+  epLength: String(comic.epsCount),
+})
+
+export const createCommonToUniItem = (comic: bika.comic.RawCommonComic) => uni.item.Item.create({
+  $$meta: {},
+  $$plugin: pluginName,
+  author: spiltUsers(comic.author),
+  categories: comic.categories.concat(comic.tags),
+  cover: {
+    $$plugin: pluginName,
+    forkNamespace: 'default',
+    path: comic.thumb.path,
+  },
+  title: comic.title,
+  id: comic._id,
+  viewNumber: comic.totalViews,
+  likeNumber: comic.totalLikes,
+  updateTime: Number(comic.updated_at),
+  customIsAI: false,
+  contentType: BikaPage.contentType,
+  length: 'unknown',
+  epLength: 'unknown'
+})
+export const createLessToUniItem = (comic: bika.comic.RawLessComic) => uni.item.Item.create({
+  $$meta: {},
+  $$plugin: pluginName,
+  author: spiltUsers(comic.author),
+  categories: comic.categories,
+  cover: {
+    $$plugin: pluginName,
+    forkNamespace: 'default',
+    path: comic.thumb.path,
+  },
+  title: comic.title,
+  id: comic._id,
+  viewNumber: comic.totalViews,
+  likeNumber: comic.totalLikes,
+  customIsAI: false,
+  contentType: BikaPage.contentType,
+  length: String(comic.pagesCount),
+  epLength: String(comic.epsCount),
+})
