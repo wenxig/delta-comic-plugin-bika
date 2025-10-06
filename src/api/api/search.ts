@@ -8,7 +8,7 @@ export namespace _bikaApiSearch {
   const { PromiseContent } = Utils.data
   export const getHotTags = PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await bikaStore.api.value!.get<{ keywords: string[] }>("/keywords", { signal })).keywords)
 
-  export const getRandomComic = PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await bikaStore.api.value!.get<{ comics: BikaType.comic.RawCommonComic[] }>(`/comics/random`, { signal })).comics.map(createCommonToUniItem))
+  export const getRandomComic = PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await bikaStore.api.value!.get<{ comics: BikaType.comic.RawCommonComic[] }>(`/comics/random`, { signal })).comics.map(c => createCommonToUniItem(c)))
 
   export const getCollections = PromiseContent.fromAsyncFunction((signal?: AbortSignal) => createClassFromResponse(bikaStore.api.value!.get<{ collections: BikaType.search.RawCollection[] }>("/collections", { signal }), _bikaSearch.Collection, 'collections'))
 
@@ -36,7 +36,7 @@ export namespace _bikaApiSearch {
     }
     const levelData = await _levelData
     return <BikaType.search.Levelboard>{
-      comics: (levelData.slice(0, 3)).map(v => (<{ comics: BikaType.comic.RawLessComic[] }>v).comics.map(createLessToUniItem)),
+      comics: (levelData.slice(0, 3)).map(v => (<{ comics: BikaType.comic.RawLessComic[] }>v).comics.map(c => createLessToUniItem(c))),
       users: levelData[3].users.map(v => new _bikaUser.Knight(v))
     }
   })

@@ -30,8 +30,9 @@ export default defineConfig({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        name: _package.name,
+        name: 'bika',
         version: _package.version,
+        
       },
       build: {
         externalGlobals: {

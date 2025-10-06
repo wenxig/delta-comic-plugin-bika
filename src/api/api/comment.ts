@@ -16,7 +16,7 @@ export namespace _bikaApiComment {
       comments: BikaType.api.pica.RawStream<BikaType.comment.RawComment>
       topComments: BikaType.comment.RawComment[]
     }>(`/${from}/${sourceId}/comments?page=${page}`, { signal }))
-    if (page == 1) comments.docs.unshift(...topComments)
+    if (page === 1) comments.docs.unshift(...topComments)
     const newComments: BikaType.api.pica.RawStream<BikaType.comment.Comment> = {
       ...comments,
       docs: comments.docs.map(c => new _bikaComment.Comment(c))

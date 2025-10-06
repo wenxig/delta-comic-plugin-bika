@@ -1,13 +1,12 @@
 import { pluginName } from "@/symbol"
 import View from "@/components/view.vue"
-import { uni, defaultLayout, Utils } from "delta-comic-core"
+import { uni, Utils } from "delta-comic-core"
 import { bika } from "."
 
 export class BikaPage extends uni.content.ContentPage {
   public static contentType = uni.content.ContentPage.toContentTypeString({
     name: 'default',
-    plugin: pluginName,
-    layout: defaultLayout
+    plugin: pluginName
   })
   public override plugin = pluginName
   public override contentType = uni.content.ContentPage.toContentType(BikaPage.contentType)

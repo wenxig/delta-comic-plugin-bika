@@ -49,7 +49,7 @@ const onInit = async () => {
     initTimes++
     if (initTimes > 10) return clearInterval(id)
     swiper.value?.slideTo(pageOnIndex.value, 0)
-    if (pageOnIndex.value == pageOnIndex.value) clearInterval(id)
+    if (pageOnIndex.value === pageOnIndex.value) clearInterval(id)
   }, 1)
 }
 
@@ -116,7 +116,7 @@ const { handleTouchend, handleTouchmove, handleTouchstart, handleDbTap } = (() =
     handleTouchend: () => {
       const touchEndTime = Date.now()
       // 判断是否为单击
-      if (!isDragging && touchEndTime - touchStartTime < THRESHOLD && tapEventTimerId == 0) {
+      if (!isDragging && touchEndTime - touchStartTime < THRESHOLD && tapEventTimerId === 0) {
         tapEventTimerId = <any>setTimeout(() => {
           tapEventTimerId = 0
           $emit('click')
@@ -140,7 +140,7 @@ const imageQualityMap: Record<bika.ImageQuality, string> = {
   original: '大清'
 }
 
-const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.index == $props.page.ep))
+const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.index === $props.page.ep))
 </script>
 
 <template>
@@ -197,7 +197,7 @@ const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.inde
         :transition="{ ease: 'easeInOut', duration: 0.2 }"
         class="absolute backdrop-blur-md bg-black/50 z-3 bottom-0 w-full text-white flex h-14 items-center justify-center">
         <Comp.Var :value="{ showNum: false }" v-slot="{ value }">
-          <VanSlider v-model="selectPage" @change="v => pageOnIndex == v || swiper?.slideTo(v, 0)" :min="0"
+          <VanSlider v-model="selectPage" @change="v => pageOnIndex === v || swiper?.slideTo(v, 0)" :min="0"
             :max="images.length > 1 ? images.length - 1 : selectPage + 1" @drag-start="value.showNum = true"
             @drag-end="value.showNum = false" class="!w-[calc(100%-1rem)] !absolute !top-0" inactive-color="#8888">
             <template #button>

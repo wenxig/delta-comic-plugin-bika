@@ -45,7 +45,11 @@ export const createStructFromResponseStream = async<T extends Record<string, bik
 
 export const spiltUsers = (userString = '') => userString.split(/\,|，|\&|\||、|＆|(\sand\s)|(\s和\s)|(\s[xX]\s)/ig).filter(Boolean).map(v => v.trim()).filter(Boolean)
 
-export const createFullToUniItem = (comic: bika.comic.RawFullComic) => uni.item.Item.create({
+export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new uni.ep.Ep({
+  $$plugin: pluginName,
+  index: "1",
+  name: '',
+})) => uni.item.Item.create({
   $$meta: {},
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
@@ -61,14 +65,20 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic) => uni.item.
   likeNumber: comic.likesCount,
   commentNumber: comic.commentsCount,
   isLiked: comic.isLiked,
-  updateTime: Number(comic.updated_at),
+  updateTime: new Date(comic.updated_at).getTime(),
   customIsAI: false,
   contentType: BikaPage.contentType,
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
+  thisEp: thisEp.toJSON(),
+  description: comic.description
 })
 
-export const createCommonToUniItem = (comic: bika.comic.RawCommonComic) => uni.item.Item.create({
+export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp = new uni.ep.Ep({
+  $$plugin: pluginName,
+  index: "1",
+  name: '',
+})) => uni.item.Item.create({
   $$meta: {},
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
@@ -82,13 +92,18 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic) => uni.i
   id: comic._id,
   viewNumber: comic.totalViews,
   likeNumber: comic.totalLikes,
-  updateTime: Number(comic.updated_at),
+  updateTime: new Date(comic.updated_at).getTime(),
   customIsAI: false,
   contentType: BikaPage.contentType,
   length: 'unknown',
-  epLength: 'unknown'
+  epLength: 'unknown',
+  thisEp: thisEp.toJSON()
 })
-export const createLessToUniItem = (comic: bika.comic.RawLessComic) => uni.item.Item.create({
+export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new uni.ep.Ep({
+  $$plugin: pluginName,
+  index: "1",
+  name: '',
+})) => uni.item.Item.create({
   $$meta: {},
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
@@ -106,4 +121,5 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic) => uni.item.
   contentType: BikaPage.contentType,
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
+  thisEp: thisEp.toJSON()
 })

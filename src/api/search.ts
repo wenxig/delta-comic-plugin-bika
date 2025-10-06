@@ -17,7 +17,7 @@ export namespace _bikaSearch {
     public title: string
     public comics: _bikaComic.RawCommonComic[]
     public get $comics() {
-      return this.comics.map(createCommonToUniItem)
+      return this.comics.map((c) => createCommonToUniItem(c))
     }
     constructor(protected $$raw: RawCollection) {
       this.title = $$raw.title
