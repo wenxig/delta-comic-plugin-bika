@@ -32,7 +32,7 @@ export default defineConfig({
       userscript: {
         name: 'bika',
         version: _package.version,
-        
+
       },
       build: {
         externalGlobals: {
@@ -55,11 +55,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     }
   },
-  // css: {
-  //   transformer: 'lightningcss',
-  //   lightningcss: {
-  //     targets: lightningcss.browserslistToTargets(browserslist('> 1%, last 2 versions, not ie <= 8'))
-  //   }
-  // },
+  server: {
+    port: 6173
+  },
   base: "/",
 })

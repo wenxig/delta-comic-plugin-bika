@@ -29,6 +29,7 @@ export class BikaPage extends uni.content.ContentPage {
       this.images.content.isLoading.value || bika.api.comic.getComicPages(this.id, Number(this.ep)).then(async v => this.images.resolve(await Promise.all(v.map(v => v.$media.toUni().getUrl())))),
     ])
   }
+  public override comments = bika.api.comment.createCommentsStream(this.id, 'comics')
   public override reloadAll(): any {
     throw new Error("Method not implemented.")
   }

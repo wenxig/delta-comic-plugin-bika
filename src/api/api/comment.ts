@@ -17,9 +17,9 @@ export namespace _bikaApiComment {
       topComments: BikaType.comment.RawComment[]
     }>(`/${from}/${sourceId}/comments?page=${page}`, { signal }))
     if (page === 1) comments.docs.unshift(...topComments)
-    const newComments: BikaType.api.pica.RawStream<BikaType.comment.Comment> = {
+    const newComments: BikaType.api.pica.RawStream<BikaType.comment.BikaComment> = {
       ...comments,
-      docs: comments.docs.map(c => new _bikaComment.Comment(c))
+      docs: comments.docs.map(c => new _bikaComment.BikaComment(c))
     }
     return newComments
   })
@@ -27,9 +27,9 @@ export namespace _bikaApiComment {
   export const createCommentsStream = (sourceId: string, from: 'games' | 'comics' = 'comics') => bikaStream((page, signal) => getComments(from, sourceId, page, signal))
 
 
-  export const getChildComments = PromiseContent.fromAsyncFunction((parentId: string, page: number, signal?: AbortSignal) => createClassFromResponseStream(bikaStore.api.value!.get<{ comments: BikaType.api.pica.RawStream<BikaType.comment.RawChildComment> }>(`/comments/${parentId}/childrens?page=${page}`, { signal }), _bikaComment.ChildComment, 'comments'))
+  export const getChildComments = PromiseContent.fromAsyncFunction((parentId: string, page: number, signal?: AbortSignal) => createClassFromResponseStream(bikaStore.api.value!.get<{ comments: BikaType.api.pica.RawStream<BikaType.comment.RawChildComment> }>(`/comments/${parentId}/childrens?page=${page}`, { signal }), _bikaComment.BikaComment, 'comments'))
   export const createChildCommentsStream = (parentId: string) => bikaStream((page, signal) => getChildComments(parentId, page, signal))
 
-  export const getMyComment = PromiseContent.fromAsyncFunction((page: number, signal?: AbortSignal) => createClassFromResponseStream(bikaStore.api.value!.get<{ comments: BikaType.api.pica.RawStream<BikaType.comment.RawMyComment> }>(`/users/my-comments?page=${page}`, { signal }), _bikaComment.MyComment, 'comments'))
+  export const getMyComment = PromiseContent.fromAsyncFunction((page: number, signal?: AbortSignal) => createClassFromResponseStream(bikaStore.api.value!.get<{ comments: BikaType.api.pica.RawStream<BikaType.comment.RawMyComment> }>(`/users/my-comments?page=${page}`, { signal }), _bikaComment.BikaComment, 'comments'))
   export const createMyCommentsStream = () => bikaStream((page, signal) => getMyComment(page, signal))
 }

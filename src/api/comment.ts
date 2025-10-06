@@ -1,5 +1,7 @@
-import dayjs from "dayjs"
 import { _bikaUser } from "./user"
+import { uni } from "delta-comic-core"
+import { bika } from "."
+import { pluginName } from "@/symbol"
 
 export namespace _bikaComment {
   export interface RawBaseComment {
@@ -14,97 +16,50 @@ export namespace _bikaComment {
     commentsCount: number
     isLiked: boolean
   }
-  export abstract class BaseComment implements RawBaseComment {
-    public toJSON() {
-      return this.$$raw
-    }
-    public static isComment(v: unknown): v is BaseComment {
-      return v instanceof BaseComment
-    }
-    public _id: string
-    public content: string
-    public _user?: _bikaUser.RawUserMe
-    public get $_user() {
-      return this._user && new _bikaUser.UserMe(this._user)
-    }
-    public totalComments: number
-    public isTop: boolean
-    public hide: boolean
-    public created_at: string
-    public get $created_at() {
-      return dayjs(this.created_at)
-    }
-    public likesCount: number
-    public commentsCount: number
-    public isLiked: boolean
-    constructor(protected $$raw: RawBaseComment) {
-      this._id = $$raw._id
-      this.content = $$raw.content
-      this._user = $$raw._user
-      this.totalComments = $$raw.totalComments
-      this.isTop = $$raw.isTop
-      this.hide = $$raw.hide
-      this.created_at = $$raw.created_at
-      this.likesCount = $$raw.likesCount
-      this.commentsCount = $$raw.commentsCount
-      this.isLiked = $$raw.isLiked
-    }
-  }
-
   export interface RawComment extends RawBaseComment {
     _comic: string
   }
-  export class Comment extends BaseComment implements RawComment {
-    public override toJSON() {
-      return this.$$raw
-    }
-    public static override isComment(v: unknown): v is Comment {
-      return v instanceof Comment
-    }
-    public _comic: string
-    constructor(protected override $$raw: RawComment) {
-      super($$raw)
-      this._comic = $$raw._comic
-    }
-  }
-
   export interface RawMyComment extends RawBaseComment {
     _comic: {
       _id: string
       title: string
     }
   }
-  export class MyComment extends BaseComment implements RawMyComment {
-    public override toJSON() {
-      return this.$$raw
-    }
-    public static override isComment(v: unknown): v is MyComment {
-      return v instanceof MyComment
-    }
-    public _comic: {
-      _id: string
-      title: string
-    }
-    constructor(protected override $$raw: RawMyComment) {
-      super($$raw)
-      this._comic = $$raw._comic
-    }
-  }
-
   export interface RawChildComment extends RawComment {
     _parent: string
   }
-  export class ChildComment extends Comment implements RawChildComment {
-    public override toJSON() {
-      return this.$$raw
+
+  export class BikaComment extends uni.comment.Comment {
+    public override async like(signal?: AbortSignal) {
+      const res = await bika.api.comment.likeComment(this.id, signal)
+      return res === 'like'
     }
-    public static isChildComment(v: unknown): v is ChildComment {
-      return v instanceof ChildComment
+    public override async report(signal?: AbortSignal) {
+      await bika.api.comment.reportComment(this.id, signal)
+      return true
     }
-    public _parent: string
-    constructor(protected override $$raw: RawChildComment) {
-      super($$raw)
-      this._parent = $$raw._parent
+    public override children = bika.api.comment.createChildCommentsStream(this.id)
+    constructor(v: RawBaseComment) {
+      super({
+        childrenCount: v.commentsCount,
+        content: {
+          text: v.content,
+          type: 'string'
+        },
+        id: v._id,
+        isLiked: v.isLiked,
+        likeCount: v.likesCount,
+        time: new Date(v.created_at).getTime(),
+        sender: {
+          name: v._user?.name ?? '匿名',
+          user: v._user
+        },
+        reported: v.hide,
+        $$plugin: pluginName,
+        $$meta: {
+          raw: v
+        }
+      })
     }
   }
 }

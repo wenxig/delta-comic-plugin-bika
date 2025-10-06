@@ -1,5 +1,7 @@
+import { uni } from "delta-comic-core"
 import { _bikaImage } from "./image"
 import { _bikaUser } from "./user"
+import { bika } from "."
 
 export namespace _bikaComic {
 
@@ -50,7 +52,7 @@ export namespace _bikaComic {
     updated_at: number
     id: string
   }
-  
+
   export interface RawPage {
     id: string
     media: _bikaImage.RawImage
@@ -67,6 +69,25 @@ export namespace _bikaComic {
       this.id = v.id
       this.media = v.media
       this._id = v._id
+    }
+  }
+
+  export class BikaItem extends uni.item.Item {
+    public override async like(signal?: AbortSignal) {
+      const { action } = await bika.api.comic.likeComic(this.id, signal)
+      return action == 'like'
+    }
+    public override report() {
+      return Promise.resolve()
+    }
+    public override sendComment(text: string, signal?: AbortSignal) {
+      return bika.api.comment.sendComment(this.id, text, signal)
+    }
+    private constructor(v: uni.item.RawItem) {
+      super(v)
+    }
+    public static create(v: uni.item.RawItem) {
+      return new this(v)
     }
   }
 }

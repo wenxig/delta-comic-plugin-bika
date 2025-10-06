@@ -1,5 +1,5 @@
 import { uni, Utils } from 'delta-comic-core'
-import type { bika as _bk, bika } from '..'
+import { bika as _bk, bika } from '..'
 import { pluginName } from '@/symbol'
 import { BikaPage } from '../page'
 
@@ -49,7 +49,7 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
   $$plugin: pluginName,
   index: "1",
   name: '',
-})) => uni.item.Item.create({
+})) => bika.comic.BikaItem.create({
   $$meta: {},
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
@@ -78,7 +78,7 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   $$plugin: pluginName,
   index: "1",
   name: '',
-})) => uni.item.Item.create({
+})) => bika.comic.BikaItem.create({
   $$meta: {},
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
@@ -103,7 +103,7 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new
   $$plugin: pluginName,
   index: "1",
   name: '',
-})) => uni.item.Item.create({
+})) => bika.comic.BikaItem.create({
   $$meta: {},
   $$plugin: pluginName,
   author: spiltUsers(comic.author),

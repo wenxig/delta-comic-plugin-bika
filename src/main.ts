@@ -9,6 +9,8 @@ import { bika } from "./api"
 import { bikaStore } from "./store"
 import { BikaPage } from "./api/page"
 import dayjs from 'dayjs'
+import Card from "./components/card.vue"
+import CommentRow from "./components/commentRow.vue"
 const testAxios = axios.create({
   timeout: 10000,
   method: 'GET',
@@ -16,6 +18,7 @@ const testAxios = axios.create({
     return inRange(status, 199, 499)
   },
 })
+testAxios.interceptors.response.use(undefined, Utils.request.utilInterceptors.createAutoRetry(testAxios, 2))
 definePlugin({
   name: pluginName,
   api: {
@@ -40,7 +43,13 @@ definePlugin({
     },
     layout: {
       [BikaPage.contentType]: window.$layout.default
-    }
+    },
+    itemCard: {
+      [BikaPage.contentType]: Card
+    },
+    commentRow: {
+      [BikaPage.contentType]: CommentRow
+    },
   },
   auth: {
     passSelect: async () => {
