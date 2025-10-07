@@ -1,5 +1,5 @@
 import "@/index.css"
-import { definePlugin, Utils } from "delta-comic-core"
+import { definePlugin, uni, Utils } from "delta-comic-core"
 import { api, image, share } from "./api/forks"
 import axios from "axios"
 import { inRange } from "lodash-es"
@@ -11,6 +11,7 @@ import { BikaPage } from "./api/page"
 import dayjs from 'dayjs'
 import Card from "./components/card.vue"
 import CommentRow from "./components/commentRow.vue"
+import User from "./components/user.vue"
 const testAxios = axios.create({
   timeout: 10000,
   method: 'GET',
@@ -35,7 +36,10 @@ definePlugin({
     forks: {
       default: image
     },
-    test: '/tobs/e735e94e-e595-4d63-99c5-61cbf0aefcb4.jpg'
+    test: '/tobs/6369917e-95ee-42ca-a187-3cac73e5b68b.jpg'
+  },
+  user: {
+    card: User
   },
   content: {
     contentPage: {
@@ -49,7 +53,7 @@ definePlugin({
     },
     commentRow: {
       [BikaPage.contentType]: CommentRow
-    },
+    }
   },
   auth: {
     passSelect: async () => {
@@ -160,5 +164,21 @@ definePlugin({
       const share = Utils.request.createAxios(() => f)
       bikaStore.share.value = share
     }
-  }
+  },
+  otherProgress: [{
+    name: '获取用户信息',
+    async call(setDescription) {
+      setDescription('请求网络中')
+      uni.user.User.userBase.set(pluginName, await bika.api.user.getProfile())
+      setDescription('成功')
+    },
+  }, {
+    name: '签到',
+    async call(setDescription) {
+      const user = <bika.user.UserMe>uni.user.User.userBase.get(pluginName)
+      if (user.customUser.isPunched) return setDescription('当前已签到')
+      await bika.api.user.punch()
+      setDescription('签到成功')
+    },
+  }]
 })

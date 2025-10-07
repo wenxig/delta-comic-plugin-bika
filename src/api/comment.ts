@@ -30,6 +30,9 @@ export namespace _bikaComment {
   }
 
   export class BikaComment extends uni.comment.Comment {
+    override sendComment(text: string, signal?: AbortSignal) {
+      return bika.api.comment.sendChildComment(this.id, text, signal)
+    }
     public override async like(signal?: AbortSignal) {
       const res = await bika.api.comment.likeComment(this.id, signal)
       return res === 'like'
@@ -38,6 +41,7 @@ export namespace _bikaComment {
       await bika.api.comment.reportComment(this.id, signal)
       return true
     }
+    public override sender!: uni.user.User
     public override children = bika.api.comment.createChildCommentsStream(this.id)
     constructor(v: RawBaseComment) {
       super({
@@ -58,8 +62,11 @@ export namespace _bikaComment {
         $$plugin: pluginName,
         $$meta: {
           raw: v
-        }
+        },
+        isTop: v.isTop
       })
+      if (v._user)
+        this.sender = new bika.user.User(v._user)
     }
   }
 }
