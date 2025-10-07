@@ -53,6 +53,16 @@ export namespace _bikaSearch {
     }
   }
 
+  export interface Init {
+    apiLevel: number
+    categories: { id: string, title: string }[]
+    imageServer: string
+    isIdUpdated: boolean
+    isPunched: boolean
+    latestApplication: undefined
+    minApiLevel: 22
+  }
+
   export interface Levelboard {
     users: _bikaUser.Knight[],
     comics: uni.item.Item[][]

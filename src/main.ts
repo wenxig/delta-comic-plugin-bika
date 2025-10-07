@@ -166,19 +166,21 @@ definePlugin({
     }
   },
   otherProgress: [{
-    name: '获取用户信息',
+    name: '获取初始化信息',
     async call(setDescription) {
       setDescription('请求网络中')
-      uni.user.User.userBase.set(pluginName, await bika.api.user.getProfile())
+      const init = await bika.api.search.getInit()
+      isPunched = init.isPunched
       setDescription('成功')
     },
   }, {
-    name: '签到',
+    name: '获取用户 & 签到',
     async call(setDescription) {
-      const user = <bika.user.UserMe>uni.user.User.userBase.get(pluginName)
-      if (user.customUser.isPunched) return setDescription('当前已签到')
-      await bika.api.user.punch()
-      setDescription('签到成功')
+      setDescription('请求网络中')
+      if (!isPunched) await bika.api.user.punch()
+      uni.user.User.userBase.set(pluginName, await bika.api.user.getProfile())
+      setDescription('成功')
     },
   }]
 })
+let isPunched = false

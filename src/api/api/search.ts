@@ -40,6 +40,8 @@ export namespace _bikaApiSearch {
       users: levelData[3].users.map(v => new _bikaUser.Knight(v))
     }
   })
+
+  export const getInit = (signal?: AbortSignal) => PromiseContent.fromPromise(bikaStore.api.value!.get<BikaType.search.Init>('/init?platform=android', { signal }))
 }
 export namespace _bikaApiSearch.utils {
   const { PromiseContent } = Utils.data
