@@ -61,7 +61,7 @@ export namespace _bikaApiComic {
   export const clearComicPagesTemp = () => comicsPagesDB.clear()
   const comicPageRequesting = new Map<string, Promise<BikaType.comic.Page[]>>()
   export const getComicPages = (async (id: string, index: number, signal?: AbortSignal) => {
-    const key = id + '|' + index + '|' + config.value.imageQuality
+    const key = id + '|' + index + '|' + config.imageQuality
     const pageDB = comicsPagesDB.get(key)
     if (pageDB) return flatten(pageDB.map(v => v.docs.map(v => new _bikaComic.Page(v))))
     if (comicPageRequesting.has(key)) return comicPageRequesting.get(key)!

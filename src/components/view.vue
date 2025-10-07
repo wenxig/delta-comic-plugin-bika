@@ -9,21 +9,22 @@ import { computed, shallowRef } from 'vue'
 import { entries, inRange, isEmpty } from 'lodash-es'
 import { ArrowBackIosNewRound, FullscreenExitRound } from '@vicons/material'
 import { LikeOutlined } from '@vicons/antd'
-import { motion } from 'motion-v'
+import { AnimatePresence, motion } from 'motion-v'
 import { watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { BikaPage } from '@/api/page'
-import { useFullscreen } from '@vueuse/core'
 import { Comp, Store } from 'delta-comic-core'
 import { bika } from '@/api'
 import { config as bikaConfig } from '@/config'
+import { useFullscreen } from '@vueuse/core'
 const $props = defineProps<{
   page: BikaPage
 }>()
-const { isFullscreen } = useFullscreen()
+const isFullScreen = defineModel<boolean>('isFullScreen', { required: true })
+const fcCrt = useFullscreen()
 onBeforeRouteLeave(() => {
-  if (isFullscreen.value) {
-    isFullscreen.value = false
+  if (isFullScreen.value) {
+    fcCrt.exit()
     return false
   }
 })
@@ -171,11 +172,11 @@ const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.inde
       <div class="right-0" @click.stop="goNext" />
     </div>
     <AnimatePresence>
-      <motion.div v-if="isShowMenu && isFullscreen" :initial="{ translateY: '-100%', opacity: 0 }"
+      <motion.div v-if="isShowMenu && isFullScreen" :initial="{ translateY: '-100%', opacity: 0 }"
         class="absolute bg-[linear-gradient(rgba(0,0,0,0.5)_50%,_transparent)] z-3 top-0 w-full text-white flex h-14 items-center pt-safe"
         :exit="{ translateY: '-100%', opacity: 0 }" :animate="{ translateY: '0%', opacity: 1 }"
         :transition="{ ease: 'easeInOut', duration: 0.2 }">
-        <NButton class="!text-2xl !mx-3" text color="#fff" @click="isFullscreen = false">
+        <NButton class="!text-2xl !mx-3" text color="#fff" @click="fcCrt.exit()">
           <NIcon>
             <ArrowBackIosNewRound />
           </NIcon>
@@ -192,7 +193,7 @@ const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.inde
           </VanBadge>
         </div>
       </motion.div>
-      <motion.div v-if="isShowMenu && isFullscreen" :initial="{ translateY: '100%', opacity: 0 }"
+      <motion.div v-if="isShowMenu && isFullScreen" :initial="{ translateY: '100%', opacity: 0 }"
         :exit="{ translateY: '100%', opacity: 0 }" :animate="{ translateY: '0%', opacity: 1 }"
         :transition="{ ease: 'easeInOut', duration: 0.2 }"
         class="absolute backdrop-blur-md bg-black/50 z-3 bottom-0 w-full text-white flex h-14 items-center justify-center">
@@ -222,16 +223,16 @@ const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.inde
           <div>
             <VanPopover
               :actions="entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
-              @select="q => bikaConfig.value.imageQuality = q.label" placement="top-end" theme="dark">
+              @select="q => bikaConfig.imageQuality = q.label" placement="top-end" theme="dark">
               <template #reference>
                 <NButton text color="#fff">
-                  {{ imageQualityMap[bikaConfig.value.imageQuality] }}
+                  {{ imageQualityMap[bikaConfig.imageQuality] }}
                 </NButton>
               </template>
             </VanPopover>
           </div>
           <div>
-            <NButton class="!text-3xl " text color="#fff" @click="isFullscreen = false">
+            <NButton class="!text-3xl " text color="#fff" @click="fcCrt.exit()">
               <NIcon>
                 <FullscreenExitRound />
               </NIcon>

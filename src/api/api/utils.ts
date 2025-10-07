@@ -50,7 +50,9 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
   index: "1",
   name: '',
 })) => bika.comic.BikaItem.create({
-  $$meta: {},
+  $$meta: {
+    comic
+  },
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
   categories: comic.categories.concat(comic.tags),
@@ -71,7 +73,8 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
   thisEp: thisEp.toJSON(),
-  description: comic.description
+  description: comic.description,
+  commentSendable: comic.allowComment
 })
 
 export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp = new uni.ep.Ep({
@@ -79,7 +82,9 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   index: "1",
   name: '',
 })) => bika.comic.BikaItem.create({
-  $$meta: {},
+  $$meta: {
+    comic
+  },
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
   categories: comic.categories.concat(comic.tags),
@@ -97,14 +102,17 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   contentType: BikaPage.contentType,
   length: 'unknown',
   epLength: 'unknown',
-  thisEp: thisEp.toJSON()
+  thisEp: thisEp.toJSON(),
+  commentSendable: false
 })
 export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new uni.ep.Ep({
   $$plugin: pluginName,
   index: "1",
   name: '',
 })) => bika.comic.BikaItem.create({
-  $$meta: {},
+  $$meta: {
+    comic
+  },
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
   categories: comic.categories,
@@ -121,5 +129,6 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new
   contentType: BikaPage.contentType,
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
-  thisEp: thisEp.toJSON()
+  thisEp: thisEp.toJSON(),
+  commentSendable: false
 })

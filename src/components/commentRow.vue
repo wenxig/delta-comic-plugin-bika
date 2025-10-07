@@ -6,11 +6,13 @@ import userIcon from '@/assets/images/userIcon.webp?url'
 import { Comp, uni, Utils } from 'delta-comic-core'
 import { bika } from '@/api'
 import { pluginName } from '@/symbol'
-import dayjs from 'dayjs'
 const $props = defineProps<{
   comment: uni.comment.Comment
+  item: uni.item.Item
+  parentComment?: uni.comment.Comment
 }>()
 const raw = computed<bika.comment.RawBaseComment>(() => $props.comment.$$meta!.raw)
+const rawUploader = computed<bika.user.RawUser | undefined>(() => (<bika.comic.RawFullComic>$props.item.$$meta.comic)?._creator)
 const $emit = defineEmits<{
   click: [c: uni.comment.Comment]
 }>()
@@ -18,6 +20,9 @@ defineSlots<{
   default(): void
 }>()
 
+const isUploader = computed(() => raw.value._user && rawUploader.value && rawUploader.value._id == raw.value._user._id)
+
+const isParentSender = computed(() => $props.comment.sender.name == $props.parentComment?.sender.name)
 </script>
 
 <template>
@@ -35,8 +40,15 @@ defineSlots<{
     <VanCol class="!flex flex-col ml-1 relative" span="19">
       <div class="mt-2 mb-2 flex flex-col">
         <div class="text-sm text-(--van-text-color)">
-          {{ raw._user?.name ?? '' }}
-          <span class="mr-1 text-[11px] text-(--nui-primary-color) font-normal">Lv{{ raw._user?.level }}</span>
+          <div class=" text-sm "
+            :class="[(isUploader || isParentSender) ? 'text-(--nui-primary-color) font-bold' : 'text-(--van-text-color)']">
+            {{ raw._user?.name ?? '' }}
+            <span class="mr-1 text-[11px] text-(--nui-primary-color) font-normal">Lv{{ raw._user?.level }}</span>
+            <span class="bg-(--nui-primary-color) rounded text-white text-[9px] px-0.5 py-0.5 -translate-y-0.5"
+              v-if="isUploader">UP</span>
+            <span class="bg-(--nui-primary-color) rounded text-white text-[9px] px-0.5 py-0.5 -translate-y-0.5"
+              v-if="isParentSender">LZ</span>
+          </div>
         </div>
         <span class="text-[11px]  text-(--van-text-color-2)">
           {{ Utils.translate.createDateString(comment.$time()) }}
@@ -76,7 +88,7 @@ defineSlots<{
         <slot />
       </div>
 
-      <div v-if="comment.childrenCount > 0"
+      <div v-if="comment.childrenCount > 0 && !isParentSender"
         class="w-full rounded bg-(--van-gray-2)/80 dark:bg-(--van-text-color-2)/90 h-9 flex items-center mt-1 mb-3 text-(--nui-primary-color) pointer-events-none">
         <span class="ml-2 text-[13px]">共{{ comment.childrenCount }}条回复</span>
         <NIcon size="11px" class="ml-1">
