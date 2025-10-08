@@ -20,4 +20,11 @@ declare global {
     toJSONObject(): T[]
   }
 }
+export declare module 'axios' {
+  interface AxiosRequestConfig {
+    __retryCount?: number
+    disretry?: boolean
+  }
+}
+
 export { }

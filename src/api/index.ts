@@ -15,6 +15,19 @@ import { _bikaApiUser } from "./api/user"
 export namespace bika {
   export type ImageQuality = 'low' | 'medium' | 'high' | 'original'
   export type SortType = 'dd' | 'da' | 'ld' | 'vd'
+  export const sorts = [{
+    text: '新到旧',
+    value: <bika.SortType>'dd'
+  }, {
+    text: '旧到新',
+    value: <bika.SortType>'da'
+  }, {
+    text: '点赞数最多',
+    value: <bika.SortType>'ld'
+  }, {
+    text: '观看数最多',
+    value: <bika.SortType>'vd'
+  }]
   export type SearchMode = "pid" | "uploader" | "keyword" | 'category' | 'tag'
   export interface FillerTag {
     name: string

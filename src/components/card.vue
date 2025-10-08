@@ -40,7 +40,7 @@ const $emit = defineEmits<{
       <NIcon color="var(--van-text-color-2)" size="14px">
         <DrawOutlined />
       </NIcon>
-      <span class="ml-0.5 text-xs van-ellipsis max-w-2/3 text-(--van-text-color-2)">
+      <span class="ml-0.5 text-xs van-ellipsis w-2/3 text-(--van-text-color-2)">
         {{ item.author[0] }}
         <template v-if="item.author.length > 1">
           等联合创作

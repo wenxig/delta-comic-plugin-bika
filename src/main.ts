@@ -12,6 +12,8 @@ import dayjs from 'dayjs'
 import Card from "./components/card.vue"
 import CommentRow from "./components/commentRow.vue"
 import User from "./components/user.vue"
+import Tabbar from "./components/tabbar.vue"
+import { MD5 } from "crypto-js"
 const testAxios = axios.create({
   timeout: 10000,
   method: 'GET',
@@ -39,7 +41,20 @@ definePlugin({
     test: '/tobs/6369917e-95ee-42ca-a187-3cac73e5b68b.jpg'
   },
   user: {
-    card: User
+    card: User,
+    syncFavourite: {
+      download() {
+        const stream = bika.api.user.createFavouriteComicStream()
+        return stream.nextToDone()
+      },
+      upload(items) {
+        return Promise.all(items.map(v => bika.api.comic.favouriteComic(v.id).then(r =>{
+          if (r.action === 'un_favourite') {
+            return bika.api.comic.favouriteComic(v.id)
+          }
+        })))
+      },
+    }
   },
   content: {
     contentPage: {
@@ -151,6 +166,8 @@ definePlugin({
           return requestConfig
         })
         ins.interceptors.response.use(c => {
+          if (!c.data.data && c.config.method?.toUpperCase() == 'GET')
+            throw new Error('[plugin bika] non-data response was been gotten.')
           c.data = c.data.data
           return c
         })
@@ -164,23 +181,89 @@ definePlugin({
       const share = Utils.request.createAxios(() => f)
       bikaStore.share.value = share
     }
+
+    // 异步加载部分数据
+    bika.api.search.getCollections().then(collections => {
+      bikaStore.collections.value = collections
+      uni.content.ContentPage.setTabbar(pluginName, ...collections.map(c => ({
+        title: c.title,
+        id: MD5(c.title).toString(),
+        comp: Tabbar
+      })))
+    })
   },
   otherProgress: [{
     name: '获取初始化信息',
     async call(setDescription) {
       setDescription('请求网络中')
-      const init = await bika.api.search.getInit()
-      isPunched = init.isPunched
+      initData = await bika.api.search.getInit()
+      uni.content.ContentPage.setCategories(pluginName, ...initData.categories.map(v => ({
+        title: v.title,
+        namespace: '',
+        search: {
+          methodId: 'category',
+          input: v.title,
+          sort: bika.sorts[0].value
+        }
+      })))
       setDescription('成功')
     },
   }, {
     name: '获取用户 & 签到',
     async call(setDescription) {
       setDescription('请求网络中')
-      if (!isPunched) await bika.api.user.punch()
+      if (!initData.isPunched) await bika.api.user.punch()
       uni.user.User.userBase.set(pluginName, await bika.api.user.getProfile())
       setDescription('成功')
     },
-  }]
+  }],
+  search: {
+    methods: {
+      keyword: {
+        defaultSort: bika.sorts[0].value,
+        name: '关键词',
+        sorts: bika.sorts,
+        getStream(input, sort: bika.SortType) {
+          return bika.api.search.utils.createKeywordStream(input, sort)
+        },
+        async getAutoComplete() {
+          return []
+        }
+      },
+      author: {
+        defaultSort: bika.sorts[0].value,
+        name: '作者',
+        sorts: bika.sorts,
+        getStream(input, sort: bika.SortType) {
+          return bika.api.search.utils.createAuthorStream(input, sort)
+        },
+        async getAutoComplete() {
+          return []
+        }
+      },
+      category: {
+        defaultSort: bika.sorts[0].value,
+        name: '分类',
+        sorts: bika.sorts,
+        getStream(input, sort: bika.SortType) {
+          return bika.api.search.utils.createCategoryStream(input, sort)
+        },
+        async getAutoComplete(input) {
+          return initData.categories.filter(v => v.title.includes(input)).map(v => ({ text: v.title, value: v.title }))
+        }
+      },
+      tag: {
+        defaultSort: bika.sorts[0].value,
+        name: '标签',
+        sorts: bika.sorts,
+        getStream(input, sort: bika.SortType) {
+          return bika.api.search.utils.createTagStream(input, sort)
+        },
+        async getAutoComplete() {
+          return []
+        }
+      }
+    }
+  }
 })
-let isPunched = false
+let initData: bika.search.Init

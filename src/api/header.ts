@@ -18,7 +18,6 @@ export const getBikaApiHeaders = (pathname: string, method: string) => {
     ['nonce', bikaStore.nonce.value],
     ['image-quality', config.imageQuality],
     ['signature', HmacSHA256(rawSignature, '~d}$Q7$eIni=V)9\\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn').toString(enc.Hex)],
-    ['raw-signature', rawSignature]
   ]
   if (!isEmpty(bikaStore.loginToken.value)) headers.push(['authorization', bikaStore.loginToken.value])
   return headers

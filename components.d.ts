@@ -18,6 +18,7 @@ declare module 'vue' {
     NThing: typeof import('naive-ui')['NThing']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Tabbar: typeof import('./src/components/tabbar.vue')['default']
     User: typeof import('./src/components/user.vue')['default']
     VanBadge: typeof import('vant/es')['Badge']
     VanCol: typeof import('vant/es')['Col']

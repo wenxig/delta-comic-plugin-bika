@@ -13,4 +13,6 @@ export namespace bikaStore {
 
   export const api = shallowRef<Utils.request.Requester>()
   export const share = shallowRef<Utils.request.Requester>()
+
+  export const collections = shallowRef<bika.search.Collection[]>([])
 }

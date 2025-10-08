@@ -51,12 +51,12 @@ export namespace _bikaApiSearch.utils {
   const createSearchComicStream = (keyword: string, sort: BikaType.SortType, api: (keyword: string, page?: any, sort?: BikaType.SortType | undefined, signal?: AbortSignal | undefined) => PromiseLike<BikaType.api.pica.RawStream<uni.item.Item>>) => bikaStream((page, signal) => api(keyword, page, sort, signal))
   export const createKeywordStream = (keyword: string, sort: BikaType.SortType) => createSearchComicStream(keyword, sort, getComicsByKeyword)
 
-  export const createAuthorStream = (author: string, sort: BikaType.SortType) => createSearchComicStream(author, sort, getComicsByKeyword)
-
-  export const createTranslatorStream = (translator: string, sort: BikaType.SortType) => createSearchComicStream(translator, sort, getComicsByKeyword)
-
-  export const getComicsByUploader = PromiseContent.fromAsyncFunction((id: string, page = 1, sort: BikaType.SortType = 'dd', signal?: AbortSignal) => createStructFromResponseStream(bikaStore.api.value!.get<{ comics: BikaType.api.pica.RawStream<BikaType.comic.RawLessComic> }>(`/comics?page=${page}&ca=${(id)}&s=${sort}`, { signal }), createLessToUniItem))
-  export const createUploaderStream = (uploader: string, sort: BikaType.SortType) => createSearchComicStream(uploader, sort, getComicsByUploader)
+  export const getComicsByAuthor = PromiseContent.fromAsyncFunction(async (author: string, page = 1, sort: BikaType.SortType = 'dd', signal?: AbortSignal) => {
+    const data = await getComicsByKeyword(author, page, sort, signal)
+    data.docs = data.docs.filter(v => v.author.includes(author.trim()))
+    return data
+  })
+  export const createAuthorStream = (author: string, sort: BikaType.SortType) => createSearchComicStream(author, sort, getComicsByAuthor)
 
   export const getComicsByCategories = PromiseContent.fromAsyncFunction((category: string, page = 1, sort: BikaType.SortType = 'dd', signal?: AbortSignal) => createStructFromResponseStream(bikaStore.api.value!.get<{ comics: BikaType.api.pica.RawStream<BikaType.comic.RawLessComic> }>(`/comics?page=${page}&c=${(category)}&s=${sort}`, { signal }), createLessToUniItem))
   export const createCategoryStream = (category: string, sort: BikaType.SortType) => createSearchComicStream(category, sort, getComicsByCategories)
