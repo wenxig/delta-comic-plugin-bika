@@ -23,7 +23,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
-          version: "18"         # 可按需修改
+          version: "10.18.1"         # 可按需修改
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
