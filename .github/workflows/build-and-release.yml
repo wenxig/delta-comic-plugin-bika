@@ -16,6 +16,9 @@ jobs:
         with:
           node-version: "23"   # 可改为 16/20 等
           cache: "pnpm"
+          
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
