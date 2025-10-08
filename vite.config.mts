@@ -20,12 +20,12 @@ export default defineConfig({
         VantResolver()
       ],
     }),
-    legacyPlugin({
-      targets: ['defaults', 'chrome 100'],
-      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
-      renderLegacyChunks: true,
-      renderModernChunks: false,
-    }),
+    // legacyPlugin({
+    //   targets: ['defaults', 'chrome 100'],
+    //   additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+    //   renderLegacyChunks: true,
+    //   renderModernChunks: false,
+    // }),
     tailwindcss(),
     monkey({
       entry: 'src/main.ts',
