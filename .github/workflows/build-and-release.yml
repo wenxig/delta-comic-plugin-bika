@@ -1,0 +1,67 @@
+name: CI — Build & Release
+on:
+  push:
+    branches: ["main"]     # 按需修改触发分支
+  workflow_dispatch: {}    # 手动触发（可选）
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (with pnpm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "23"   # 可改为 16/20 等
+          cache: "pnpm"
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: "18"         # 可按需修改
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (Vite)
+        run: pnpm build
+
+      - id: locate-js
+        name: Locate built single JS file
+        run: |
+          set -e
+          if [ ! -d "dist" ]; then
+            echo "dist directory not found"
+            exit 1
+          fi
+          js_count=$(find dist -type f -name '*.js' | wc -l | tr -d ' ')
+          if [ "$js_count" -eq 0 ]; then
+            echo "No .js files found in dist"
+            exit 1
+          fi
+          if [ "$js_count" -gt 1 ]; then
+            echo "Multiple .js files found in dist (count=$js_count). Expected exactly 1."
+            echo "Listing files for debugging:"
+            find dist -type f -name '*.js' -print
+            exit 1
+          fi
+          js_file=$(find dist -type f -name '*.js' -print -quit)
+          echo "Found JS: $js_file"
+          out_name="build-${GITHUB_SHA::8}.js"
+          cp "$js_file" "$out_name"
+          echo "artifact=$out_name" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release and upload artifact
+        uses: ncipollo/release-action@v1
+        with:
+          tag: release-${{ github.sha }}               # 会在仓库创建 tag name 为 release-<full-sha>
+          name: Release (auto build) ${{ github.retention_days }}           # Release 标题（短 sha）
+          body: Build from ${{ github.ref }} by ${{ github.actor }}[workflow]
+          files: ${{ steps.locate-js.outputs.artifact }}
+
+      # 可选：删除本地临时文件
+      - name: Cleanup
+        if: always()
+        run: rm -f build-*.js || true
