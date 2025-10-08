@@ -14,6 +14,7 @@ import CommentRow from "./components/commentRow.vue"
 import User from "./components/user.vue"
 import Tabbar from "./components/tabbar.vue"
 import { MD5 } from "crypto-js"
+import Edit from "./components/edit.vue"
 const testAxios = axios.create({
   timeout: 10000,
   method: 'GET',
@@ -42,13 +43,14 @@ definePlugin({
   },
   user: {
     card: User,
+    edit: Edit,
     syncFavourite: {
       download() {
         const stream = bika.api.user.createFavouriteComicStream()
         return stream.nextToDone()
       },
       upload(items) {
-        return Promise.all(items.map(v => bika.api.comic.favouriteComic(v.id).then(r =>{
+        return Promise.all(items.map(v => bika.api.comic.favouriteComic(v.id).then(r => {
           if (r.action === 'un_favourite') {
             return bika.api.comic.favouriteComic(v.id)
           }
