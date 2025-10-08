@@ -21,7 +21,7 @@ export default defineConfig({
       ],
     }),
     legacyPlugin({
-      targets: ['defaults', 'ie >= 11', 'chrome 52'],
+      targets: ['defaults', 'chrome 100'],
       additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
       renderLegacyChunks: true,
       renderModernChunks: false,
