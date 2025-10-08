@@ -19,7 +19,7 @@
 
 ## 源项目
 
-### PicaAcg/bika/哔卡漫画
+### Delta Comic
 
    [![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=wenxig&repo=delta-comic)](https://github.com/wenxig/delta-comic)  
 
