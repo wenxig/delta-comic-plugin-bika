@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from 'motion-v'
 import { watch } from 'vue'
 import { onBeforeRouteLeave } from 'vue-router'
 import { BikaPage } from '@/api/page'
-import { Comp, Store } from 'delta-comic-core'
+import { Comp, Utils } from 'delta-comic-core'
 import { bika } from '@/api'
 import { config as bikaConfig } from '@/config'
 import { useFullscreen } from '@vueuse/core'
@@ -34,7 +34,6 @@ const $emit = defineEmits<{
   click: []
   reloadPages: []
 }>()
-const config = Store.useConfig()
 const swiper = shallowRef<SwiperClass>()
 
 const images = computed(() => $props.page.images.content.data.value)
@@ -140,16 +139,21 @@ const imageQualityMap: Record<bika.ImageQuality, string> = {
   high: '超清',
   original: '大清'
 }
-
 const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.index === $props.page.ep))
+
+const smartAbortReloadAbortSignal = new Utils.request.SmartAbortController()
+watch(() => bikaConfig['bika.imageQuality'], () => {
+  smartAbortReloadAbortSignal.abort()
+  $props.page.reloadAll(smartAbortReloadAbortSignal.signal)
+})
 </script>
 
 <template>
   <NSpin :show="isEmpty(images)" class="size-full *:first:size-full relative bg-black pt-safe">
     <Swiper :modules="[Virtual, Zoom, HashNavigation, Keyboard]" @swiper="sw => swiper = sw" :initialSlide="pageOnIndex"
-      :slidesPerView="config['app.read.twoImage'] ? 2 : 1" @slideChange="sw => pageOnIndex = sw.activeIndex"
+      :slidesPerView="bikaConfig['bika.doubleImage'] ? 2 : 1" @slideChange="sw => pageOnIndex = sw.activeIndex"
       class="size-full" @double-tap="handleDbTap" @touch-move="handleTouchmove" @touch-end="handleTouchend"
-      :virtual="{ enabled: true, addSlidesAfter: config['app.read.preloadImageNumbers'], addSlidesBefore: config['app.read.preloadImageNumbers'] }"
+      :virtual="{ enabled: true, addSlidesAfter: bikaConfig['bika.preloadImage'], addSlidesBefore: bikaConfig['bika.preloadImage'] }"
       @init="onInit" zoom keyboard direction="horizontal" @touch-start="handleTouchstart">
       <SwiperSlide v-for="(image, index) of images" :key="index" :virtualIndex="index" :data-hash="index + 1"
         class="overflow-hidden">
@@ -221,12 +225,12 @@ const nowEp = computed(() => $props.page.eps.content.data.value.find(v => v.inde
             </NButton>
           </div>
           <div>
-            <VanPopover
+            <VanPopover @select="q => bikaConfig['bika.imageQuality'] = q.label" placement="top-end" theme="dark"
               :actions="entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
-              @select="q => bikaConfig.imageQuality = q.label" placement="top-end" theme="dark">
+              class="!bg-transparent **:!overflow-hidden !overflow-hidden">
               <template #reference>
                 <NButton text color="#fff">
-                  {{ imageQualityMap[bikaConfig.imageQuality] }}
+                  {{ imageQualityMap[<bika.ImageQuality>bikaConfig['bika.imageQuality']] }}
                 </NButton>
               </template>
             </VanPopover>

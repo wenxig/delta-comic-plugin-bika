@@ -27,7 +27,8 @@ export namespace _bikaUser {
           path: v.avatar.path ?? ''
         } : undefined,
         id: v._id,
-        name: v.name
+        name: v.name,
+        $$plugin: pluginName
       })
       this.customUser = v
     }
@@ -49,7 +50,8 @@ export namespace _bikaUser {
           path: v.avatar.path ?? ''
         } : undefined,
         id: v._id,
-        name: v.name
+        name: v.name,
+        $$plugin: pluginName
       })
       this.customUser = v
     }
@@ -68,7 +70,8 @@ export namespace _bikaUser {
           path: v.avatar.path ?? ''
         } : undefined,
         id: v._id,
-        name: v.name
+        name: v.name,
+        $$plugin: pluginName
       })
       this.customUser = v
     }

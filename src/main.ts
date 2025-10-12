@@ -15,6 +15,7 @@ import User from "./components/user.vue"
 import Tabbar from "./components/tabbar.vue"
 import { MD5 } from "crypto-js"
 import Edit from "./components/edit.vue"
+import type { AxiosResponse } from "axios"
 const testAxios = axios.create({
   timeout: 10000,
   method: 'GET',
@@ -159,7 +160,7 @@ definePlugin({
     }
   },
   onBooted: ins => {
-    console.log('[plugin bika] setup...', ins, ins.api?.api)
+    console.log('setup...', ins, ins.api?.api)
     if (ins.api?.api) {
       const f = ins.api.api
       const api = Utils.request.createAxios(() => f, {}, ins => {
@@ -167,9 +168,13 @@ definePlugin({
           for (const value of getBikaApiHeaders(requestConfig.url ?? '/', requestConfig.method!.toUpperCase())) requestConfig.headers.set(...value)
           return requestConfig
         })
+        ins.interceptors.response.use(undefined, err => {
+          if (err?.response && err.response.data.error == '1014') return Promise.resolve((<AxiosResponse>{ data: false, config: err.config, headers: err.response?.headers, status: 200, statusText: '200', request: err.request })) // only /comic/:id
+          return Promise.reject(err)
+        })
         ins.interceptors.response.use(c => {
           if (!c.data.data && c.config.method?.toUpperCase() == 'GET')
-            throw new Error('[plugin bika] non-data response was been gotten.')
+            throw new Error('non-data response was been gotten.')
           c.data = c.data.data
           return c
         })
@@ -183,16 +188,6 @@ definePlugin({
       const share = Utils.request.createAxios(() => f)
       bikaStore.share.value = share
     }
-
-    // 异步加载部分数据
-    bika.api.search.getCollections().then(collections => {
-      bikaStore.collections.value = collections
-      uni.content.ContentPage.setTabbar(pluginName, ...collections.map(c => ({
-        title: c.title,
-        id: MD5(c.title).toString(),
-        comp: Tabbar
-      })))
-    })
   },
   otherProgress: [{
     name: '获取初始化信息',
@@ -215,7 +210,17 @@ definePlugin({
     async call(setDescription) {
       setDescription('请求网络中')
       if (!initData.isPunched) await bika.api.user.punch()
-      uni.user.User.userBase.set(pluginName, await bika.api.user.getProfile())
+      const [user, collections] = await Promise.all([
+        bika.api.user.getProfile(),
+        bika.api.search.getCollections()
+      ])
+      uni.user.User.userBase.set(pluginName, user)
+      bikaStore.collections.value = collections
+      uni.content.ContentPage.setTabbar(pluginName, ...collections.map(c => ({
+        title: c.title,
+        id: MD5(c.title).toString(),
+        comp: Tabbar
+      })))
       setDescription('成功')
     },
   }],

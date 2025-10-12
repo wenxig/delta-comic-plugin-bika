@@ -11,27 +11,32 @@ export class BikaPage extends uni.content.ContentPage {
   public override plugin = pluginName
   public override contentType = uni.content.ContentPage.toContentType(BikaPage.contentType)
   public images = Utils.data.PromiseContent.withResolvers<string[]>()
-  public override loadAll() {
+  public override loadAll(signal?: AbortSignal) {
     return Promise.all([
-      this.eps.content.isLoading.value || bika.api.comic.getComicEps(this.id).then(v => this.eps.resolve(v)),
-      this.detail.content.isLoading.value || bika.api.comic.getComicInfo(this.id).then(v => {
+      this.eps.content.isLoading.value || this.eps.content.loadPromise(bika.api.comic.getComicEps(this.id, signal)),
+      this.detail.content.isLoading.value || this.detail.content.loadPromise(bika.api.comic.getComicInfo(this.id, signal).then(v => {
         if (!v) {
-          return Utils.message.createDialog({
+          throw Utils.message.createDialog({
             type: 'error',
             content: `${pluginName}漫画id:${this.id}审核中`,
             positiveText: '确定'
           })
         } else
-          this.detail.resolve(v)
-      }),
-      this.pid.content.isLoading.value || bika.api.comic.getComicPicId(this.id).then(v => this.pid.resolve(String(v))),
-      this.recommends.content.isLoading.value || bika.api.comic.getRecommendComics(this.id).then(v => this.recommends.resolve(v)),
-      this.images.content.isLoading.value || bika.api.comic.getComicPages(this.id, Number(this.ep)).then(async v => this.images.resolve(await Promise.all(v.map(v => v.$media.toUni().getUrl())))),
+          return v
+      })),
+      this.pid.content.isLoading.value || this.pid.content.loadPromise(bika.api.comic.getComicPicId(this.id, signal).then(v => String(v))),
+      this.recommends.content.isLoading.value || this.recommends.content.loadPromise(bika.api.comic.getRecommendComics(this.id, signal)),
+      this.images.content.isLoading.value || this.images.content.loadPromise(bika.api.comic.getComicPages(this.id, Number(this.ep), signal).then(v => Promise.all(v.map(v => v.$media.toUni().getUrl())))),
     ])
   }
   public override comments = bika.api.comment.createCommentsStream(this.id, 'comics')
-  public override reloadAll(): any {
-    throw new Error("Method not implemented.")
+  public override reloadAll(signal?: AbortSignal): any {
+    this.eps.reset(true)
+    this.detail.reset(true)
+    this.pid.reset(true)
+    this.recommends.reset(true)
+    this.images.reset(true)
+    return this.loadAll(signal)
   }
   public override loadAllOffline(): Promise<any> {
     throw new Error("Method not implemented.")

@@ -15,6 +15,7 @@ const raw = computed<bika.comment.RawBaseComment>(() => $props.comment.$$meta!.r
 const rawUploader = computed<bika.user.RawUser | undefined>(() => (<bika.comic.RawFullComic>$props.item.$$meta.comic)?._creator)
 const $emit = defineEmits<{
   click: [c: uni.comment.Comment]
+  clickUser: [u: uni.user.User]
 }>()
 defineSlots<{
   default(): void
@@ -34,11 +35,11 @@ const isParentSender = computed(() => $props.comment.sender.name == $props.paren
           $$plugin: pluginName,
           forkNamespace: 'default',
           path: raw._user.avatar.path
-        }) : userIcon" class="mt-2 size-10" round fit="cover" />
+        }) : userIcon" class="mt-2 size-10" round fit="cover" @click="$emit('clickUser', comment.sender)" />
       </div>
     </VanCol>
     <VanCol class="!flex flex-col ml-1 relative" span="19">
-      <div class="mt-2 mb-2 flex flex-col">
+      <div class="mt-2 mb-2 flex flex-col" @click.stop="$emit('clickUser', comment.sender)">
         <div class="text-sm text-(--van-text-color)">
           <div class=" text-sm "
             :class="[(isUploader || isParentSender) ? 'text-(--nui-primary-color) font-bold' : 'text-(--van-text-color)']">

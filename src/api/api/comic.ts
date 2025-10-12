@@ -45,9 +45,12 @@ export namespace _bikaApiComic {
   export const getRecommendComics = PromiseContent.fromAsyncFunction((id: string, signal?: AbortSignal) => createStructFromResponse(bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>(`/comics/${id}/recommendation`, { signal }), createLessToUniItem, 'comics'))
 
 
-  export const getComicEps = PromiseContent.fromAsyncFunction((async (id: string): Promise<uni.ep.Ep[]> => {
+  export const getComicEps = PromiseContent.fromAsyncFunction((async (id: string, signal?: AbortSignal): Promise<uni.ep.Ep[]> => {
     const stream = bikaStream(async (page, signal) => (await bikaStore.api.value!.get<{ eps: BikaType.api.pica.RawStream<BikaType.comic.RawComicEp> }>(`/comics/${id}/eps?page=${page}`, { signal })).eps)
     const eps = await stream.nextToDone()
+    signal?.addEventListener('abort', () => {
+      stream.stop()
+    })
     return eps.map(ep => new uni.ep.Ep({
       $$plugin: pluginName,
       name: ep.title,
@@ -61,7 +64,7 @@ export namespace _bikaApiComic {
   export const clearComicPagesTemp = () => comicsPagesDB.clear()
   const comicPageRequesting = new Map<string, Promise<BikaType.comic.Page[]>>()
   export const getComicPages = (async (id: string, index: number, signal?: AbortSignal) => {
-    const key = id + '|' + index + '|' + config.imageQuality
+    const key = id + '|' + index + '|' + config["bika.imageQuality"]
     const pageDB = comicsPagesDB.get(key)
     if (pageDB) return flatten(pageDB.map(v => v.docs.map(v => new _bikaComic.Page(v))))
     if (comicPageRequesting.has(key)) return comicPageRequesting.get(key)!

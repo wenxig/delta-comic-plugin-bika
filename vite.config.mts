@@ -20,17 +20,17 @@ export default defineConfig({
         VantResolver()
       ],
     }),
-    legacyPlugin({
-      renderLegacyChunks: false,
-      modernPolyfills: true
-    }),
+    // legacyPlugin({
+    //   renderLegacyChunks: false,
+    //   modernPolyfills: true
+    // }),
     tailwindcss(),
     monkey({
       entry: 'src/main.ts',
       userscript: {
         name: 'bika',
         version: _package.version,
-
+        author: _package.author.name
       },
       build: {
         externalGlobals: {
