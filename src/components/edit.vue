@@ -82,7 +82,6 @@ const _editSlogan = async () => {
 </script>
 
 <template>
-  <VanNavBar left-arrow @click-left="$router.back()" title="编辑" />
   <div>
     <VanPopover :actions="[{ text: '修改' }, { text: '查看' }]"
       @select="({ text }) => text == '修改' ? uploadToAvatarEditor() : me.avatar && me.avatar.getUrl().then(img => Utils.image.showImagePreview([img]))">
