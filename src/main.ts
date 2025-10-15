@@ -23,6 +23,7 @@ const testAxios = axios.create({
     return inRange(status, 199, 499)
   },
 })
+testAxios.interceptors.request.use(Utils.request.utilInterceptors.devProxy)
 testAxios.interceptors.response.use(undefined, Utils.request.utilInterceptors.createAutoRetry(testAxios, 2))
 definePlugin({
   name: pluginName,
@@ -33,7 +34,7 @@ definePlugin({
     },
     share: {
       forks: () => share,
-      test: (fork, signal) => testAxios.get(`${fork}/dns`, { signal })
+      test: (fork, signal) => testAxios.get(`${fork}/pic/share/set/?c=685d566e5709fd7e61ea2c4f`, { signal })
     }
   },
   image: {

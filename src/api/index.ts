@@ -82,3 +82,4 @@ export namespace bika.api.pica {
   //   bikaStore.loginToken = ''
   // })
 }
+window.$api.bika = bika
