@@ -21,8 +21,7 @@ const testAxios = axios.create({
   method: 'GET',
   validateStatus(status) {
     return inRange(status, 199, 499)
-  },
-  adapter: [Utils.request.utilInterceptors.devProxy, 'http']
+  }
 })
 testAxios.interceptors.response.use(undefined, Utils.request.utilInterceptors.createAutoRetry(testAxios, 2))
 definePlugin({
