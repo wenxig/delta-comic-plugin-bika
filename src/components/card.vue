@@ -19,22 +19,16 @@ const $emit = defineEmits<{
 <template>
   <Comp.content.UnitCard :="$props" @click="$emit('click', item)">
     <template #smallTopInfo>
-      <span v-if="item.viewNumber">
+      <span>
         <VanIcon name="eye-o" class="mr-0.5" size="14px" />
         <span>{{ item.viewNumber }}</span>
       </span>
-      <span v-if="item.likeNumber">
+      <span>
         <NIcon class="mr-0.5" size="14px" color="white">
           <LikeOutlined />
         </NIcon>
         <span>{{ item.likeNumber }}</span>
       </span>
-      <template v-else>
-        <span v-for="category of item.categories.slice(0, 2)">
-          <VanIcon class="mr-0.5" name="apps-o" size="14px" color="white" />
-          <span>{{ category }}</span>
-        </span>
-      </template>
     </template>
     <div class="flex gap-0.5 items-center" v-if="type == 'small'">
       <NIcon color="var(--van-text-color-2)" size="14px">
@@ -49,7 +43,7 @@ const $emit = defineEmits<{
     </div>
     <template v-if="type != 'small'">
       <div class="flex gap-0.5 **:text-nowrap">
-        <VanTag type="primary" plain v-for="category of item.categories">{{ category }}</VanTag>
+        <VanTag type="primary" plain v-for="category of item.categories">{{ category.name }}</VanTag>
       </div>
       <div class="flex flex-nowrap items-center *:text-nowrap van-ellipsis mt-0.5">
         <NIcon color="var(--van-text-color-2)" size="14px">
