@@ -15,13 +15,7 @@ const dataSource = computed(() => Utils.data.PromiseContent.resolve(
 
 <template>
   <Comp.Waterfall :source="{ data: dataSource, isEnd: true }" v-slot="{ item }" ref="list">
-    <Card :item free-height type="small" @click="$router.force.push({
-      name: 'content',
-      params: {
-        contentType: uni.content.ContentPage.toContentTypeString(item.contentType),
-        id: item.id,
-        ep: item.$thisEp.index
-      }
-    })" />
+    <Card :item free-height type="small"
+      @click="Utils.eventBus.SharedFunction.call('routeToContent', item.contentType, item.id, item.$thisEp.index)" />
   </Comp.Waterfall>
 </template>

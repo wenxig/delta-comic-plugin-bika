@@ -25,4 +25,4 @@
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=wenxig/delta-comic&type=Date)](https://www.star-history.com/#wenxig/delta-comic&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=wenxig/delta-comic-plugin-bika&type=Date)](https://www.star-history.com/#wenxig/delta-comic-plugin-bika&Date)
