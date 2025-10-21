@@ -20,7 +20,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.18",
     "delta-comic-core": "link:../delta-comic-core",
-    "lodash-es": "^4.17.21",
+    "es-toolkit": "^1.40.0",
     "naive-ui": "^2.43.1",
     "vant": "^4.9.21",
     "vue": "^3.5.22",
@@ -30,7 +30,6 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.15",
     "@types/crypto-js": "^4.2.2",
-    "@types/lodash-es": "latest",
     "@types/node": "^24.8.1",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vitejs/plugin-vue-jsx": "^5.1.1",

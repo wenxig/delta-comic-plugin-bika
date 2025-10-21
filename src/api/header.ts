@@ -1,7 +1,7 @@
 import { config } from "@/config"
 import { bikaStore } from "@/store"
 import { enc, HmacSHA256 } from "crypto-js"
-import { isEmpty } from "lodash-es"
+import { isEmpty } from "es-toolkit/compat-es"
 
 export const getBikaApiHeaders = (pathname: string, method: string) => {
   type Headers = [name: string, value: string][]

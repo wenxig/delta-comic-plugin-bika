@@ -1,4 +1,4 @@
-import { flatten, times, sortBy } from "lodash-es"
+import { flatten, times, sortBy } from "es-toolkit/compat-es"
 import type { bika as BikaType } from '..'
 import { bikaStream, createClassFromResponseStream, createFullToUniItem, createLessToUniItem, createStructFromResponse } from "./utils"
 import { uni, Utils } from "delta-comic-core"

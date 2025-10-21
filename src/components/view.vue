@@ -1,5 +1,4 @@
 <script setup lang='ts'>
-import { entries } from 'lodash-es'
 import { watch } from 'vue'
 import { BikaPage } from '@/api/page'
 import { Utils } from 'delta-comic-core'
@@ -27,7 +26,7 @@ const win = window
   <win.$view.images :page>
     <div>
       <VanPopover @select="q => bikaConfig['bika.imageQuality'] = q.label" placement="top-end" theme="dark"
-        :actions="entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
+        :actions="Object.entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
         class="!bg-transparent **:!overflow-hidden !overflow-hidden">
         <template #reference>
           <NButton text color="#fff">
