@@ -55,14 +55,23 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
   },
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
-  categories: comic.categories.concat(comic.tags).map(v => ({
+  categories: comic.categories.map(v => ({
     name: v,
+    group: '分类',
     search: {
       keyword: v,
       sort: bika.sorts[0].value,
       source: 'keyword'
     }
-  })),
+  })).concat(comic.tags.map(v => ({
+    name: v,
+    group: '标签',
+    search: {
+      keyword: v,
+      sort: bika.sorts[0].value,
+      source: 'keyword'
+    }
+  }))),
   cover: {
     $$plugin: pluginName,
     forkNamespace: 'default',
@@ -94,14 +103,23 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   },
   $$plugin: pluginName,
   author: spiltUsers(comic.author),
-  categories: comic.categories.concat(comic.tags).map(v => ({
+  categories: comic.categories.map(v => ({
     name: v,
+    group: '分类',
     search: {
       keyword: v,
       sort: bika.sorts[0].value,
       source: 'keyword'
     }
-  })),
+  })).concat(comic.tags.map(v => ({
+    name: v,
+    group: '标签',
+    search: {
+      keyword: v,
+      sort: bika.sorts[0].value,
+      source: 'keyword'
+    }
+  }))),
   cover: {
     $$plugin: pluginName,
     forkNamespace: 'default',
@@ -131,6 +149,7 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new
   author: spiltUsers(comic.author),
   categories: comic.categories.map(v => ({
     name: v,
+    group: '分类',
     search: {
       keyword: v,
       sort: bika.sorts[0].value,
