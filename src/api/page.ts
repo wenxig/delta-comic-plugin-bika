@@ -44,7 +44,7 @@ export class BikaPage extends uni.content.ContentPage {
   public override exportOffline(_save: any): Promise<void> {
     throw new Error("Method not implemented.")
   }
-  public override ViewComp = View
+  public override ViewComp = <any>View
   constructor(preload: uni.content.PreloadValue, id: string, ep: string) {
     super(preload, id, ep)
   }

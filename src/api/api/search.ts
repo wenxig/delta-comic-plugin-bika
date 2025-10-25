@@ -1,4 +1,4 @@
-import { Utils, type uni } from 'delta-comic-core'
+import { Utils, type PluginConfigSearchHotPageLevelboard, type uni } from 'delta-comic-core'
 import type { bika as BikaType } from '..'
 import { bikaStream, createClassFromResponse, createCommonToUniItem, createLessToUniItem, createStructFromResponseStream } from "./utils"
 import { bikaStore } from '@/store'
@@ -14,32 +14,28 @@ export namespace _bikaApiSearch {
 
   export const getCategories = PromiseContent.fromAsyncFunction((signal?: AbortSignal) => createClassFromResponse(bikaStore.api.value!.get<{ categories: BikaType.search.RawCategory[] }>("/categories", { signal }), _bikaSearch.Category, 'categories'))
 
-  let lvb: Promise<[{
-    comics: BikaType.comic.RawLessComic[]
+  export const getLevelboard = () => [{
+    name: '日排行',
+    content: () => PromiseContent.fromPromise(bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>('/comics/leaderboard?tt=H24&ct=VC'))
+      .setProcessor(v => {
+        const c = v.comics
+        return c.map(c => createLessToUniItem(c))
+      })
   }, {
-    comics: BikaType.comic.RawLessComic[]
+    name: '周排行',
+    content: () => PromiseContent.fromPromise(bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>('/comics/leaderboard?tt=D7&ct=VC'))
+      .setProcessor(v => {
+        const c = v.comics
+        return c.map(c => createLessToUniItem(c))
+      })
   }, {
-    comics: BikaType.comic.RawLessComic[]
-  }, {
-    users: BikaType.user.RawKnight[]
-  }]> | undefined = undefined
-  export const getLevelboard = PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => {
-    if (lvb) {
-      var _levelData = lvb
-    } else {
-      var _levelData = lvb = Promise.all([
-        bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>('/comics/leaderboard?tt=H24&ct=VC', { signal }),
-        bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>('/comics/leaderboard?tt=D7&ct=VC', { signal }),
-        bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>('/comics/leaderboard?tt=D30&ct=VC', { signal }),
-        bikaStore.api.value!.get<{ users: BikaType.user.RawKnight[] }>('/comics/knight-leaderboard', { signal })
-      ] as const)
-    }
-    const levelData = await _levelData
-    return <BikaType.search.Levelboard>{
-      comics: (levelData.slice(0, 3)).map(v => (<{ comics: BikaType.comic.RawLessComic[] }>v).comics.map(c => createLessToUniItem(c))),
-      users: levelData[3].users.map(v => new _bikaUser.Knight(v))
-    }
-  })
+    name: '月排行',
+    content: () => PromiseContent.fromPromise(bikaStore.api.value!.get<{ comics: BikaType.comic.RawLessComic[] }>('/comics/leaderboard?tt=D30&ct=VC'))
+      .setProcessor(v => {
+        const c = v.comics
+        return c.map(c => createLessToUniItem(c))
+      })
+  }] satisfies PluginConfigSearchHotPageLevelboard[]
 
   export const getInit = (signal?: AbortSignal) => PromiseContent.fromPromise(bikaStore.api.value!.get<BikaType.search.Init>('/init?platform=android', { signal }))
 }

@@ -270,6 +270,9 @@ definePlugin({
           return []
         }
       }
+    },
+    hotPage: {
+      levelBoard: bika.api.search.getLevelboard()
     }
   }
 })

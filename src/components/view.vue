@@ -7,6 +7,7 @@ import { config as bikaConfig } from '@/config'
 const $props = defineProps<{
   page: BikaPage
 }>()
+const isFullScreen = defineModel<boolean>('isFullScreen', { require: true })
 const imageQualityMap: Record<bika.ImageQuality, string> = {
   low: '标清',
   medium: '高清',
@@ -23,7 +24,7 @@ const win = window
 </script>
 
 <template>
-  <win.$view.images :page>
+  <win.$view.images :page v-model:isFullScreen="isFullScreen">
     <div>
       <VanPopover @select="q => bikaConfig['bika.imageQuality'] = q.label" placement="top-end" theme="dark"
         :actions="Object.entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
