@@ -25,9 +25,10 @@ export default defineConfig(({ command }) => ({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        name: 'bika',
+        name: 'bika/哔咔漫画',
         version: _package.version,
-        author: _package.author.name
+        author: _package.author.name,
+        description: _package.description,
       },
       build: {
         externalGlobals: command == 'serve' ? undefined : {

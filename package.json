@@ -6,6 +6,13 @@
     "name": "wenxig",
     "email": "wenxinguo12@gmail.com"
   },
+  "homepage": "https://github.com/wenxig/delta-comic-plugin-bika",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wenxig/delta-comic-plugin-bika.git"
+  },
+  "license": "AGPL-3.0-only",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
