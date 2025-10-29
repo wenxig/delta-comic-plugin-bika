@@ -29,6 +29,7 @@ export default defineConfig(({ command }) => ({
         version: _package.version,
         author: _package.author.name,
         description: _package.description,
+        require: ['core']
       },
       build: {
         externalGlobals: command == 'serve' ? undefined : {

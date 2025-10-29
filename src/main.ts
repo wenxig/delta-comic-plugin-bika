@@ -1,5 +1,5 @@
 import "@/index.css"
-import { definePlugin, uni, Utils } from "delta-comic-core"
+import { coreModule, definePlugin, requireDepend, uni, Utils } from "delta-comic-core"
 import { api, image, share } from "./api/forks"
 import axios from "axios"
 import { inRange } from "es-toolkit/compat"
@@ -16,6 +16,8 @@ import Tabbar from "./components/tabbar.vue"
 import { MD5 } from "crypto-js"
 import Edit from "./components/edit.vue"
 import type { AxiosResponse } from "axios"
+import { config } from "./config"
+const { layout } = requireDepend(coreModule)
 const testAxios = axios.create({
   timeout: 10000,
   method: 'GET',
@@ -64,7 +66,7 @@ definePlugin({
       [BikaPage.contentType]: BikaPage
     },
     layout: {
-      [BikaPage.contentType]: window.$layout.default
+      [BikaPage.contentType]: layout.Default
     },
     itemCard: {
       [BikaPage.contentType]: Card
@@ -274,6 +276,9 @@ definePlugin({
     hotPage: {
       levelBoard: bika.api.search.getLevelboard()
     }
-  }
+  },
+  config:[
+    config
+  ]
 })
 let initData: bika.search.Init

@@ -1,7 +1,7 @@
 import { Store } from 'delta-comic-core'
 import { pluginName } from './symbol'
 import type { bika } from './api'
-export const config = (Store.useConfig().$useCustomConfig(pluginName, {
+export const config = new Store.ConfigPointer(pluginName, {
   imageQuality: {
     type: 'radio',
     comp: 'radio',
@@ -20,17 +20,5 @@ export const config = (Store.useConfig().$useCustomConfig(pluginName, {
       label: '标清',
       value: <bika.ImageQuality>'low',
     }]
-  },
-  doubleImage: {
-    type: 'switch',
-    info: '同时显示两张图片',
-    defaultValue: false
-  },
-  preloadImage: {
-    type: 'number',
-    info: '图片预加载数量',
-    defaultValue: 2,
-    float: false,
-    range: [1, 10]
   }
-}))
+})

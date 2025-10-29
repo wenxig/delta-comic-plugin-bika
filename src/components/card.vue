@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { LikeOutlined } from '@vicons/antd'
 import { AccessTimeRound, DrawOutlined } from '@vicons/material'
-import { Comp, uni, Utils } from 'delta-comic-core'
+import { coreModule, requireDepend, uni, Utils } from "delta-comic-core"
 import { StyleValue } from 'vue'
 const $props = defineProps<{
   item: uni.item.Item
@@ -14,10 +14,12 @@ const $props = defineProps<{
 const $emit = defineEmits<{
   click: [item: uni.item.Item]
 }>()
+
+const { comp } = requireDepend(coreModule)
 </script>
 
 <template>
-  <Comp.content.UnitCard :="$props" @click="$emit('click', item)">
+  <comp.ItemCard :="$props" @click="$emit('click', item)">
     <template #smallTopInfo>
       <span>
         <VanIcon name="eye-o" class="mr-0.5" size="14px" />
@@ -58,5 +60,5 @@ const $emit = defineEmits<{
         <span v-for="author of item.author" class="mr-2">{{ author }}</span>
       </div>
     </template>
-  </Comp.content.UnitCard>
+  </comp.ItemCArd>
 </template>
