@@ -25,11 +25,14 @@ export default defineConfig(({ command }) => ({
     monkey({
       entry: 'src/main.ts',
       userscript: {
-        name: 'bika/哔咔漫画',
+        name: {
+          ds: '哔咔漫画',
+          default: 'bika'
+        },
         version: _package.version,
         author: _package.author.name,
         description: _package.description,
-        require: ['core']
+        require: ['core'],
       },
       build: {
         externalGlobals: command == 'serve' ? undefined : {
@@ -46,6 +49,7 @@ export default defineConfig(({ command }) => ({
       server: {
         mountGmApi: false,
         open: false,
+        prefix: false
       }
     }),
     command == 'build' ? undefined :
