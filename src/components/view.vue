@@ -17,7 +17,7 @@ const imageQualityMap: Record<bika.ImageQuality, string> = {
 }
 const bikaConfig = Store.useConfig().$load(config)
 const smartAbortReloadAbortSignal = new Utils.request.SmartAbortController()
-watch(() => bikaConfig.imageQuality, () => {
+watch(() => bikaConfig.value.imageQuality, () => {
   smartAbortReloadAbortSignal.abort()
   $props.page.reloadAll(smartAbortReloadAbortSignal.signal)
 })

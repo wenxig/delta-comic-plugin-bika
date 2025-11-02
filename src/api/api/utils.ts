@@ -90,7 +90,8 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
   epLength: String(comic.epsCount),
   thisEp: thisEp.toJSON(),
   description: comic.description,
-  commentSendable: comic.allowComment
+  commentSendable: comic.allowComment,
+  customIsSafe: comic.tags.includes('無H內容')
 })
 
 export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp = new uni.ep.Ep({
@@ -135,13 +136,14 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   length: 'unknown',
   epLength: 'unknown',
   thisEp: thisEp.toJSON(),
-  commentSendable: false
+  commentSendable: false,
+  customIsSafe: comic.tags.includes('無H內容')
 })
 export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new uni.ep.Ep({
   $$plugin: pluginName,
   index: "1",
   name: '',
-})) => bika.comic.BikaItem.create({
+}), mustSafe = false) => bika.comic.BikaItem.create({
   $$meta: {
     comic
   },
@@ -170,5 +172,6 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
   thisEp: thisEp.toJSON(),
-  commentSendable: false
+  commentSendable: false,
+  customIsSafe: mustSafe
 })

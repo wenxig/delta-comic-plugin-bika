@@ -4,11 +4,14 @@ import { bikaStream, createClassFromResponse, createCommonToUniItem, createLessT
 import { bikaStore } from '@/store'
 import { _bikaSearch } from '../search'
 import { _bikaUser } from '../user'
+import { random } from 'es-toolkit/compat'
 export namespace _bikaApiSearch {
   const { PromiseContent } = Utils.data
   export const getHotTags = PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await bikaStore.api.value!.get<{ keywords: string[] }>("/keywords", { signal })).keywords)
 
-  export const getRandomComic = PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await bikaStore.api.value!.get<{ comics: BikaType.comic.RawCommonComic[] }>(`/comics/random`, { signal })).comics.map(c => createCommonToUniItem(c)))
+  export const getRandomComic = window.$$safe$$ ?
+    PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await _bikaApiSearch.utils.getComicsByKeyword('無H內容', random(0, 100), 'dd', signal)).docs)
+    : PromiseContent.fromAsyncFunction(async (signal?: AbortSignal) => (await bikaStore.api.value!.get<{ comics: BikaType.comic.RawCommonComic[] }>(`/comics/random`, { signal })).comics.map(c => createCommonToUniItem(c)))
 
   export const getCollections = PromiseContent.fromAsyncFunction((signal?: AbortSignal) => createClassFromResponse(bikaStore.api.value!.get<{ collections: BikaType.search.RawCollection[] }>("/collections", { signal }), _bikaSearch.Collection, 'collections'))
 
