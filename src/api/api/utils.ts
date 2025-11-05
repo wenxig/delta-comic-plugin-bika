@@ -129,7 +129,7 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   title: comic.title,
   id: comic._id,
   viewNumber: comic.totalViews,
-  likeNumber: comic.totalLikes,
+  likeNumber: comic.totalLikes ?? comic.likesCount,
   updateTime: new Date(comic.updated_at).getTime(),
   customIsAI: false,
   contentType: BikaPage.contentType,

@@ -165,7 +165,7 @@ definePlugin({
     console.log('setup...', ins, ins.api?.api)
     if (ins.api?.api) {
       const f = ins.api.api
-      const api = Utils.request.createAxios(() => f, {}, ins => {
+      const api = Utils.request.createAxios(() => f, { }, ins => {
         ins.interceptors.request.use(requestConfig => {
           for (const value of getBikaApiHeaders(requestConfig.url ?? '/', requestConfig.method!.toUpperCase())) requestConfig.headers.set(...value)
           return requestConfig
@@ -211,7 +211,9 @@ definePlugin({
     name: '获取用户 & 签到',
     async call(setDescription) {
       setDescription('请求网络中')
-      if (!initData.isPunched) await bika.api.user.punch()
+      try {
+        if (!initData.isPunched) await bika.api.user.punch()
+      } catch { }
       const [user, collections] = await Promise.all([
         bika.api.user.getProfile(),
         bika.api.search.getCollections()
@@ -277,7 +279,7 @@ definePlugin({
       levelBoard: bika.api.search.getLevelboard()
     }
   },
-  config:[
+  config: [
     config
   ]
 })
