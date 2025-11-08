@@ -1,8 +1,8 @@
 import "@/index.css"
-import { coreModule, definePlugin, requireDepend, uni, Utils } from "delta-comic-core"
+import { coreModule, definePlugin, requireDepend, uni, Utils, type PluginConfigSubscribe } from "delta-comic-core"
 import { api, image, share } from "./api/forks"
 import axios from "axios"
-import { inRange } from "es-toolkit/compat"
+import { first, inRange, isEmpty } from "es-toolkit/compat"
 import { getBikaApiHeaders } from "./api/header"
 import { pluginName } from "./symbol"
 import { bika } from "./api"
@@ -17,6 +17,7 @@ import { MD5 } from "crypto-js"
 import Edit from "./components/edit.vue"
 import type { AxiosResponse } from "axios"
 import { config } from "./config"
+import { SearchOutlined } from "@vicons/material"
 const { layout } = requireDepend(coreModule)
 const testAxios = axios.create({
   timeout: 10000,
@@ -26,6 +27,40 @@ const testAxios = axios.create({
   }
 })
 testAxios.interceptors.response.use(undefined, Utils.request.utilInterceptors.createAutoRetry(testAxios, 2))
+
+const diff = async (that: PluginConfigSubscribe, olds: Parameters<PluginConfigSubscribe['getUpdateList']>[0], signal?: AbortSignal) => {
+  const allList = await Promise.all(olds.map(async v => {
+    const stream = that.getListStream(v.author)
+    signal?.addEventListener('abort', () => stream.stop())
+    const news = (await stream.next()).value
+    if (!news) throw new Error(`[subscribe] ${v.author.label} is void!`)
+    return {
+      author: v.author,
+      list: news,
+    }
+  }))
+  const changedAuthors = new Array<uni.item.Author>()
+  for (const item of allList) {
+    const key = item.author.label
+    const old = olds.find(o => o.author.label === key)
+
+    const newFirst = first(item.list)
+    const oldFirst = first(old?.list)
+
+    let changed = false
+    if (oldFirst && newFirst)
+      changed = newFirst.id !== oldFirst.id
+    else
+      changed = true
+    if (changed) changedAuthors.push(item.author)
+  }
+
+  return {
+    isUpdated: isEmpty(changedAuthors),
+    whichUpdated: changedAuthors
+  }
+}
+
 definePlugin({
   name: pluginName,
   api: {
@@ -58,6 +93,37 @@ definePlugin({
             return bika.api.comic.favouriteComic(v.id)
           }
         })))
+      },
+    },
+    authorActions: {
+      search_uploader: {
+        name: '搜索该上传者',
+        call(author) {
+          const user: bika.user.RawUser = author.$$meta?.user
+          return Utils.eventBus.SharedFunction.call('routeToSearch', user._id, 'uploader')
+        },
+        icon: SearchOutlined
+      },
+      search: {
+        name: '搜索',
+        call(author) {
+          return Utils.eventBus.SharedFunction.call('routeToSearch', author.label, 'keyword')
+        },
+        icon: SearchOutlined
+      }
+    }
+  },
+  subscribe: {
+    keyword: {
+      getListStream: author => bika.api.search.utils.createKeywordStream(author.label, 'dd'),
+      getUpdateList(olds, signal) {
+        return diff(this, olds, signal)
+      },
+    },
+    uploader: {
+      getListStream: author => bika.api.search.utils.createUploaderStream(author.$$meta?.user._id ?? 'fail', 'dd'),
+      getUpdateList(olds, signal) {
+        return diff(this, olds, signal)
       },
     }
   },
@@ -165,7 +231,7 @@ definePlugin({
     console.log('setup...', ins, ins.api?.api)
     if (ins.api?.api) {
       const f = ins.api.api
-      const api = Utils.request.createAxios(() => f, { }, ins => {
+      const api = Utils.request.createAxios(() => f, {}, ins => {
         ins.interceptors.request.use(requestConfig => {
           for (const value of getBikaApiHeaders(requestConfig.url ?? '/', requestConfig.method!.toUpperCase())) requestConfig.headers.set(...value)
           return requestConfig
@@ -237,8 +303,12 @@ definePlugin({
         getStream(input, sort: bika.SortType) {
           return bika.api.search.utils.createKeywordStream(input, sort)
         },
-        async getAutoComplete() {
-          return []
+        async getAutoComplete(input, signal) {
+          const latest = await bika.api.search.utils.getComicsByKeyword(input, undefined, undefined, signal)
+          return latest.docs.map(v => ({
+            text: v.title,
+            value: v.title
+          }))
         }
       },
       author: {
@@ -248,8 +318,12 @@ definePlugin({
         getStream(input, sort: bika.SortType) {
           return bika.api.search.utils.createAuthorStream(input, sort)
         },
-        async getAutoComplete() {
-          return []
+        async getAutoComplete(input, signal) {
+          const latest = await bika.api.search.utils.getComicsByKeyword(input, undefined, undefined, signal)
+          return latest.docs.map(v => ({
+            text: v.title,
+            value: v.title
+          }))
         }
       },
       category: {
@@ -269,6 +343,21 @@ definePlugin({
         sorts: bika.sorts,
         getStream(input, sort: bika.SortType) {
           return bika.api.search.utils.createTagStream(input, sort)
+        },
+        async getAutoComplete(input, signal) {
+          const latest = await bika.api.search.utils.getComicsByKeyword(input, undefined, undefined, signal)
+          return latest.docs.map(v => ({
+            text: v.title,
+            value: v.title
+          }))
+        }
+      },
+      uploader: {
+        defaultSort: bika.sorts[0].value,
+        name: '上传者',
+        sorts: bika.sorts,
+        getStream(input, sort: bika.SortType) {
+          return bika.api.search.utils.createUploaderStream(input, sort)
         },
         async getAutoComplete() {
           return []

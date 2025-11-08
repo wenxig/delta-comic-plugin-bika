@@ -3,14 +3,13 @@ import View from "@/components/view.vue"
 import { uni, Utils } from "delta-comic-core"
 import { bika } from "."
 
-export class BikaPage extends uni.content.ContentPage {
+export class BikaPage extends uni.content.ContentImagePage {
   public static contentType = uni.content.ContentPage.toContentTypeString({
     name: 'default',
     plugin: pluginName
   })
   public override plugin = pluginName
   public override contentType = uni.content.ContentPage.toContentType(BikaPage.contentType)
-  public images = Utils.data.PromiseContent.withResolvers<string[]>()
   public override loadAll(signal?: AbortSignal) {
     return Promise.all([
       this.eps.content.isLoading.value || this.eps.content.loadPromise(bika.api.comic.getComicEps(this.id, signal)),
@@ -26,11 +25,11 @@ export class BikaPage extends uni.content.ContentPage {
       })),
       this.pid.content.isLoading.value || this.pid.content.loadPromise(bika.api.comic.getComicPicId(this.id, signal).then(v => String(v))),
       this.recommends.content.isLoading.value || this.recommends.content.loadPromise(bika.api.comic.getRecommendComics(this.id, signal)),
-      this.images.content.isLoading.value || this.images.content.loadPromise(bika.api.comic.getComicPages(this.id, Number(this.ep), signal).then(v => Promise.all(v.map(v => v.$media.toUni().getUrl())))),
+      this.images.content.isLoading.value || this.images.content.loadPromise(bika.api.comic.getComicPages(this.id, Number(this.ep), signal).then(v => Promise.all(v.map(v => v.$media.toUni())))),
     ])
   }
   public override comments = bika.api.comment.createCommentsStream(this.id, 'comics')
-  public override reloadAll(signal?: AbortSignal): any {
+  public override reloadAll(signal?: AbortSignal) {
     this.eps.reset(true)
     this.detail.reset(true)
     this.pid.reset(true)
@@ -44,7 +43,7 @@ export class BikaPage extends uni.content.ContentPage {
   public override exportOffline(_save: any): Promise<void> {
     throw new Error("Method not implemented.")
   }
-  public override ViewComp = <any>View
+  public override ViewComp = View
   constructor(preload: uni.content.PreloadValue, id: string, ep: string) {
     super(preload, id, ep)
   }

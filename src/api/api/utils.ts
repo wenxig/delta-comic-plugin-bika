@@ -1,7 +1,10 @@
 import { uni, Utils } from 'delta-comic-core'
-import { bika as _bk, bika } from '..'
+import { bika } from '..'
 import { pluginName } from '@/symbol'
 import { BikaPage } from '../page'
+import { UserOutlined } from '@vicons/antd'
+import { DrawOutlined, GTranslateOutlined } from '@vicons/material'
+import { isArray, isEmpty } from 'es-toolkit/compat'
 
 
 export function bikaStream<T>(api: (page: number, signal: AbortSignal) => PromiseLike<bika.api.pica.RawStream<T>>) {
@@ -27,7 +30,7 @@ export const createClassFromResponse = async<T extends Record<string, any[]>, TR
 export const createStructFromResponse = async<T extends Record<string, any[]>, TResult>(source: PromiseLike<T>, box: (source: T[keyof T][number]) => TResult, key: keyof T) => {
   const data = await source
   const s = data[key]
-  return s.map(v => box(v))
+  return s.map(box)
 }
 
 export const createClassFromResponseStream = async<T extends Record<string, bika.api.pica.RawStream<any>>, TResult>(v: Promise<T>, box: new (data: T[keyof T]['docs'][number]) => TResult, key: keyof T = 'comics'): Promise<bika.api.pica.RawStream<TResult>> => {
@@ -39,11 +42,32 @@ export const createClassFromResponseStream = async<T extends Record<string, bika
 export const createStructFromResponseStream = async<T extends Record<string, bika.api.pica.RawStream<any>>, TResult>(v: Promise<T>, box: (data: T[keyof T]['docs'][number]) => TResult, key: keyof T = 'comics'): Promise<bika.api.pica.RawStream<TResult>> => {
   const data = await v
   const s = data[key]
-  s.docs = s.docs.map(v => box(v))
+  s.docs = s.docs.map(box)
   return s
 }
 
 export const spiltUsers = (userString = '') => userString.split(/\,|，|\&|\||、|＆|(\sand\s)|(\s和\s)|(\s[xX]\s)/ig).filter(Boolean).map(v => v.trim()).filter(Boolean)
+const isCosplay = (categories: string[]) => categories.includes('COSPLAY') || categories.includes('cosplay')
+const createAuthor = (comic: bika.comic.RawBaseComic) => spiltUsers(comic.author).map(v => ({
+  label: v,
+  description: isCosplay(comic.categories) ? 'coser' : '作者',
+  icon: isCosplay(comic.categories) ? UserOutlined : DrawOutlined,
+  actions: [
+    'search'
+  ],
+  subscribe: 'keyword'
+}))
+const createAuthorList = (...authors: (uni.item.Author | uni.item.Author[] | undefined | false)[]) => {
+  const _authors = new Array<uni.item.Author>()
+  for (const author of authors) {
+    if (!author) continue
+    if (isArray(author))
+      _authors.push(...author)
+    else
+      _authors.push(author)
+  }
+  return _authors
+}
 
 export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new uni.ep.Ep({
   $$plugin: pluginName,
@@ -54,7 +78,34 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
     comic
   },
   $$plugin: pluginName,
-  author: spiltUsers(comic.author),
+  author: createAuthorList(
+    createAuthor(comic),
+    comic._creator && {
+      label: comic._creator.name,
+      description: "上传者",
+      icon: {
+        $$plugin: pluginName,
+        forkNamespace: 'default',
+        path: comic._creator.avatar?.path
+      },
+      actions: [
+        'search_uploader',
+      ],
+      subscribe: 'uploader',
+      $$meta:{
+        user: comic._creator
+      }
+    },
+    !isEmpty(comic.chineseTeam) && {
+      label: comic.chineseTeam,
+      description: "翻译",
+      icon: GTranslateOutlined,
+      actions: [
+        'search',
+      ],
+      subscribe: 'keyword'
+    }
+  ),
   categories: comic.categories.map(v => ({
     name: v,
     group: '分类',
@@ -103,7 +154,18 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
     comic
   },
   $$plugin: pluginName,
-  author: spiltUsers(comic.author),
+  author: createAuthorList(
+    createAuthor(comic),
+    !isEmpty(comic.chineseTeam) && {
+      label: comic.chineseTeam,
+      description: "翻译",
+      icon: GTranslateOutlined,
+      actions: [
+        'search',
+      ],
+      subscribe: 'keyword'
+    }
+  ),
   categories: comic.categories.map(v => ({
     name: v,
     group: '分类',
@@ -148,7 +210,7 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new
     comic
   },
   $$plugin: pluginName,
-  author: spiltUsers(comic.author),
+  author: createAuthor(comic),
   categories: comic.categories.map(v => ({
     name: v,
     group: '分类',
