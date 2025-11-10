@@ -2,8 +2,6 @@ import { uni, Utils } from 'delta-comic-core'
 import { bika } from '..'
 import { pluginName } from '@/symbol'
 import { BikaPage } from '../page'
-import { UserOutlined } from '@vicons/antd'
-import { DrawOutlined, GTranslateOutlined } from '@vicons/material'
 import { isArray, isEmpty } from 'es-toolkit/compat'
 
 
@@ -51,7 +49,7 @@ const isCosplay = (categories: string[]) => categories.includes('COSPLAY') || ca
 const createAuthor = (comic: bika.comic.RawBaseComic) => spiltUsers(comic.author).map(v => ({
   label: v,
   description: isCosplay(comic.categories) ? 'coser' : '作者',
-  icon: isCosplay(comic.categories) ? UserOutlined : DrawOutlined,
+  icon: isCosplay(comic.categories) ? 'coser' : 'draw',
   actions: [
     'search'
   ],
@@ -69,11 +67,7 @@ const createAuthorList = (...authors: (uni.item.Author | uni.item.Author[] | und
   return _authors
 }
 
-export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new uni.ep.Ep({
-  $$plugin: pluginName,
-  index: "1",
-  name: '',
-})) => bika.comic.BikaItem.create({
+export const createFullToUniItem = (comic: bika.comic.RawFullComic) => bika.comic.BikaItem.create({
   $$meta: {
     comic
   },
@@ -86,20 +80,20 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
       icon: {
         $$plugin: pluginName,
         forkNamespace: 'default',
-        path: comic._creator.avatar?.path
+        path: comic._creator.avatar?.path ?? ''
       },
       actions: [
         'search_uploader',
       ],
       subscribe: 'uploader',
-      $$meta:{
+      $$meta: {
         user: comic._creator
       }
     },
     !isEmpty(comic.chineseTeam) && {
       label: comic.chineseTeam,
       description: "翻译",
-      icon: GTranslateOutlined,
+      icon: 'trans',
       actions: [
         'search',
       ],
@@ -139,17 +133,17 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic, thisEp = new
   contentType: BikaPage.contentType,
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
-  thisEp: thisEp.toJSON(),
+  thisEp: {
+    $$plugin: pluginName,
+    index: "1",
+    name: '',
+  },
   description: comic.description,
   commentSendable: comic.allowComment,
   customIsSafe: comic.tags.includes('無H內容')
 })
 
-export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp = new uni.ep.Ep({
-  $$plugin: pluginName,
-  index: "1",
-  name: '',
-})) => bika.comic.BikaItem.create({
+export const createCommonToUniItem = (comic: bika.comic.RawCommonComic) => bika.comic.BikaItem.create({
   $$meta: {
     comic
   },
@@ -159,7 +153,7 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
     !isEmpty(comic.chineseTeam) && {
       label: comic.chineseTeam,
       description: "翻译",
-      icon: GTranslateOutlined,
+      icon: 'trans',
       actions: [
         'search',
       ],
@@ -197,15 +191,15 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic, thisEp =
   contentType: BikaPage.contentType,
   length: 'unknown',
   epLength: 'unknown',
-  thisEp: thisEp.toJSON(),
+  thisEp: {
+    $$plugin: pluginName,
+    index: "1",
+    name: '',
+  },
   commentSendable: false,
   customIsSafe: comic.tags.includes('無H內容')
 })
-export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new uni.ep.Ep({
-  $$plugin: pluginName,
-  index: "1",
-  name: '',
-}), mustSafe = false) => bika.comic.BikaItem.create({
+export const createLessToUniItem = (comic: bika.comic.RawLessComic, mustSafe = false) => bika.comic.BikaItem.create({
   $$meta: {
     comic
   },
@@ -233,7 +227,11 @@ export const createLessToUniItem = (comic: bika.comic.RawLessComic, thisEp = new
   contentType: BikaPage.contentType,
   length: String(comic.pagesCount),
   epLength: String(comic.epsCount),
-  thisEp: thisEp.toJSON(),
+  thisEp: {
+    $$plugin: pluginName,
+    index: "1",
+    name: '',
+  },
   commentSendable: false,
   customIsSafe: mustSafe
 })

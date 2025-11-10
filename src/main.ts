@@ -17,7 +17,8 @@ import { MD5 } from "crypto-js"
 import Edit from "./components/edit.vue"
 import type { AxiosResponse } from "axios"
 import { config } from "./config"
-import { SearchOutlined } from "@vicons/material"
+import { DrawOutlined, GTranslateOutlined, SearchOutlined } from "@vicons/material"
+import { UserOutlined } from "@vicons/antd"
 const { layout } = requireDepend(coreModule)
 const testAxios = axios.create({
   timeout: 10000,
@@ -111,6 +112,11 @@ definePlugin({
         },
         icon: SearchOutlined
       }
+    },
+    authorIcon: {
+      coser: UserOutlined,
+      draw: DrawOutlined,
+      trans: GTranslateOutlined
     }
   },
   subscribe: {
@@ -370,6 +376,7 @@ definePlugin({
   },
   config: [
     config
-  ]
+  ],
+
 })
 let initData: bika.search.Init
