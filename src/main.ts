@@ -77,7 +77,7 @@ definePlugin({
     forks: {
       default: image
     },
-    test: '/tobs/6369917e-95ee-42ca-a187-3cac73e5b68b.jpg'
+    test: '/89173fc7-cce7-4957-b465-c9c9f5550756.jpg'
   },
   user: {
     card: User,

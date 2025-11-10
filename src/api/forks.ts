@@ -1,16 +1,11 @@
 const base = [
   {
-    "url": "pic2024a2.top",
-    "basePart": "picaapi",
-    "recommendPart": "recommend",
-  },
-  {
     "url": "go2778.com",
     "basePart": "picaapi",
     "recommendPart": "recommend",
   },
   {
-    "url": "pic2024a1.top",
+    "url": "acbbb.com",
     "basePart": "picaapi",
     "recommendPart": "recommend",
   }
