@@ -45,15 +45,16 @@ export const createStructFromResponseStream = async<T extends Record<string, bik
 }
 
 export const spiltUsers = (userString = '') => userString.split(/\,|，|\&|\||、|＆|(\sand\s)|(\s和\s)|(\s[xX]\s)/ig).filter(Boolean).map(v => v.trim()).filter(Boolean)
-const isCosplay = (categories: string[]) => categories.includes('COSPLAY') || categories.includes('cosplay')
-const createAuthor = (comic: bika.comic.RawBaseComic) => spiltUsers(comic.author).map(v => ({
+const isCosplay = (categories: string[]) => categories.includes('COSPLAY') || categories.includes('Cosplay')
+const createAuthor = (comic: bika.comic.RawBaseComic) => spiltUsers(comic.author).map<uni.item.Author>(v => ({
   label: v,
   description: isCosplay(comic.categories) ? 'coser' : '作者',
   icon: isCosplay(comic.categories) ? 'coser' : 'draw',
   actions: [
     'search'
   ],
-  subscribe: 'keyword'
+  subscribe: 'keyword',
+  $$plugin: pluginName
 }))
 const createAuthorList = (...authors: (uni.item.Author | uni.item.Author[] | undefined | false)[]) => {
   const _authors = new Array<uni.item.Author>()
@@ -88,7 +89,8 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic) => bika.comi
       subscribe: 'uploader',
       $$meta: {
         user: comic._creator
-      }
+      },
+      $$plugin: pluginName
     },
     !isEmpty(comic.chineseTeam) && {
       label: comic.chineseTeam,
@@ -97,7 +99,8 @@ export const createFullToUniItem = (comic: bika.comic.RawFullComic) => bika.comi
       actions: [
         'search',
       ],
-      subscribe: 'keyword'
+      subscribe: 'keyword',
+      $$plugin: pluginName
     }
   ),
   categories: comic.categories.map(v => ({
@@ -157,7 +160,8 @@ export const createCommonToUniItem = (comic: bika.comic.RawCommonComic) => bika.
       actions: [
         'search',
       ],
-      subscribe: 'keyword'
+      subscribe: 'keyword',
+      $$plugin: pluginName
     }
   ),
   categories: comic.categories.map(v => ({

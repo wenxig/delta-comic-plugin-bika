@@ -26,7 +26,7 @@ watch(() => bikaConfig.value.imageQuality, () => {
 
 <template>
   <view.Images :page v-model:isFullScreen="isFullScreen">
-    <div>
+    <template #bottomBar>
       <VanPopover @select="q => bikaConfig.imageQuality = q.label" placement="top-end" theme="dark"
         :actions="Object.entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
         class="!bg-transparent **:!overflow-hidden !overflow-hidden">
@@ -36,6 +36,6 @@ watch(() => bikaConfig.value.imageQuality, () => {
           </NButton>
         </template>
       </VanPopover>
-    </div>
+    </template>
   </view.Images>
 </template>
