@@ -134,17 +134,12 @@ definePlugin({
     }
   },
   content: {
-    contentPage: {
-      [BikaPage.contentType]: BikaPage
-    },
-    layout: {
-      [BikaPage.contentType]: layout.Default
-    },
-    itemCard: {
-      [BikaPage.contentType]: Card
-    },
-    commentRow: {
-      [BikaPage.contentType]: CommentRow
+    [BikaPage.contentType]: {
+      contentPage: BikaPage,
+      layout: layout.Default,
+      itemCard: Card,
+      commentRow: CommentRow,
+      itemTranslator: raw => bika.comic.BikaItem.create(raw)
     }
   },
   auth: {
