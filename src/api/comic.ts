@@ -86,7 +86,7 @@ export namespace _bikaComic {
     private constructor(v: uni.item.RawItem) {
       super(v)
     }
-    public static create(v: uni.item.RawItem) {
+    public static override create(v: uni.item.RawItem) {
       return new this(v)
     }
   }

@@ -1,6 +1,7 @@
 import { config } from "@/config"
 import { bikaStore } from "@/store"
 import { enc, HmacSHA256 } from "crypto-js"
+import { Store } from "delta-comic-core"
 import { isEmpty } from "es-toolkit/compat"
 
 export const getBikaApiHeaders = (pathname: string, method: string) => {
@@ -16,7 +17,7 @@ export const getBikaApiHeaders = (pathname: string, method: string) => {
     ['Content-Type', 'application/json; charset=UTF-8'],
     ['time', requestTime],
     ['nonce', bikaStore.nonce.value],
-    ['image-quality', config["bika.imageQuality"]],
+    ['image-quality', Store.useConfig().$load(config).value.imageQuality],
     ['signature', HmacSHA256(rawSignature, '~d}$Q7$eIni=V)9\\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn').toString(enc.Hex)],
   ]
   if (!isEmpty(bikaStore.loginToken.value)) headers.push(['authorization', bikaStore.loginToken.value])

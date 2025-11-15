@@ -29,7 +29,7 @@ watch(() => bikaConfig.value.imageQuality, () => {
     <template #bottomBar>
       <VanPopover @select="q => bikaConfig.imageQuality = q.label" placement="top-end" theme="dark"
         :actions="Object.entries(imageQualityMap).map(v => ({ text: imageQualityMap[<bika.ImageQuality>v[0]], label: v[0] }))"
-        class="!bg-transparent **:!overflow-hidden !overflow-hidden">
+        class="bg-transparent! **:overflow-hidden! overflow-hidden!">
         <template #reference>
           <NButton text color="#fff">
             {{ imageQualityMap[<bika.ImageQuality>bikaConfig.imageQuality] }}
