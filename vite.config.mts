@@ -78,7 +78,7 @@ export default defineConfig(({ command }) => ({
     }
   },
   server: {
-    port: 6174,
+    port: 6173,
     host: true
   },
   base: "/",

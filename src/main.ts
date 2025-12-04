@@ -263,7 +263,7 @@ definePlugin({
     async call(setDescription) {
       setDescription('请求网络中')
       initData = await bika.api.search.getInit()
-      uni.content.ContentPage.setCategories(pluginName, ...initData.categories.map(v => ({
+      uni.content.ContentPage.addCategories(pluginName, ...initData.categories.map(v => ({
         title: v.title,
         namespace: '',
         search: {
@@ -287,7 +287,7 @@ definePlugin({
       ])
       uni.user.User.userBase.set(pluginName, user)
       bikaStore.collections.value = collections
-      uni.content.ContentPage.setTabbar(pluginName, ...collections.map(c => ({
+      uni.content.ContentPage.addTabbar(pluginName, ...collections.map(c => ({
         title: c.title,
         id: MD5(c.title).toString(),
         comp: Tabbar
