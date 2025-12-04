@@ -4,12 +4,12 @@ import { uni, Utils } from "delta-comic-core"
 import { bika } from "."
 
 export class BikaPage extends uni.content.ContentImagePage {
-  public static contentType = uni.content.ContentPage.toContentTypeString({
-    name: 'default',
-    plugin: pluginName
-  })
+  public static contentType = uni.content.ContentPage.contentPage.toString([
+    'default',
+    pluginName
+  ])
   public override plugin = pluginName
-  public override contentType = uni.content.ContentPage.toContentType(BikaPage.contentType)
+  public override contentType = uni.content.ContentPage.contentPage.toJSON(BikaPage.contentType)
   public override loadAll(signal?: AbortSignal) {
     return Promise.all([
       this.eps.content.isLoading.value || this.eps.content.loadPromise(bika.api.comic.getComicEps(this.id, signal)),
@@ -37,10 +37,10 @@ export class BikaPage extends uni.content.ContentImagePage {
     this.images.reset(true)
     return this.loadAll(signal)
   }
-  public override loadAllOffline(): Promise<any> {
+  public override loadAllOffline(_save: any): Promise<never> {
     throw new Error("Method not implemented.")
   }
-  public override exportOffline(_save: any): Promise<void> {
+  public override exportOffline(): Promise<never> {
     throw new Error("Method not implemented.")
   }
   public override ViewComp = View
