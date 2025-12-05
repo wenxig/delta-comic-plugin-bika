@@ -101,14 +101,14 @@ definePlugin({
         name: '搜索该上传者',
         call(author) {
           const user: bika.user.RawUser = author.$$meta?.user
-          return Utils.eventBus.SharedFunction.call('routeToSearch', user._id, `${pluginName}:uploader`)
+          return Utils.eventBus.SharedFunction.call('routeToSearch', user._id, [pluginName, 'uploader'])
         },
         icon: SearchOutlined
       },
       search: {
         name: '搜索',
         call(author) {
-          return Utils.eventBus.SharedFunction.call('routeToSearch', author.label,  `${pluginName}:keyword`)
+          return Utils.eventBus.SharedFunction.call('routeToSearch', author.label, [pluginName, 'keyword'])
         },
         icon: SearchOutlined
       }
