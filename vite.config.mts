@@ -26,7 +26,7 @@ export default defineConfig(({ command }) => ({
     monkey(createMonkeyConfig({
       name: 'bika',
       displayName: '哔咔漫画',
-      supportCoreVersion: '>=0.2.2',
+      supportCoreVersion: '>=0.3.4',
       version: _package.version,
       author: _package.author.name,
       description: _package.description,

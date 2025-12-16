@@ -367,7 +367,18 @@ definePlugin({
     },
     hotPage: {
       levelBoard: bika.api.search.getLevelboard()
-    }
+    },
+    barcode: [{
+      name: "PICA号",
+      match(searchText) {
+        return /^PICA\d+$/i.test(searchText)
+      },
+      async getContent(searchText, signal) {
+        const code = searchText.match(/\d+/)?.[0]!
+        const id = await bika.api.comic.getComicIdByPicId(code, signal)
+        return [BikaPage.contentType, id, '1']
+      },
+    }]
   },
   config: [
     config
