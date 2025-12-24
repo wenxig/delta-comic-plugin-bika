@@ -74,11 +74,12 @@ definePlugin({
       test: (fork, signal) => testAxios.get(`${fork}/pic/share/set/?c=685d566e5709fd7e61ea2c4f`, { signal })
     }
   },
-  image: {
-    forks: {
-      default: image
-    },
-    test: '/89173fc7-cce7-4957-b465-c9c9f5550756.jpg'
+  resource: {
+    types: [{
+      type: 'default',
+      test: (url, signal) => axios.get(`${url}/89173fc7-cce7-4957-b465-c9c9f5550756.jpg`, { signal }),
+      urls: image
+    }],
   },
   user: {
     card: User,

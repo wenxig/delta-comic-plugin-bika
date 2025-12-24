@@ -6,11 +6,10 @@ import { NaiveUiResolver, VantResolver } from 'unplugin-vue-components/resolvers
 import tailwindcss from '@tailwindcss/vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import _package from './package.json'
-import monkey from 'vite-plugin-monkey'
 import { browserslistToTargets } from 'lightningcss'
 import browserslist from 'browserslist'
-import external from 'vite-plugin-external'
-import { createMonkeyConfig, createExternalConfig } from 'delta-comic-core/vite'
+import { deltaComic } from 'delta-comic-core/vite'
+
 export default defineConfig(({ command }) => ({
   plugins: [
     vue(),
@@ -23,16 +22,15 @@ export default defineConfig(({ command }) => ({
       ],
     }),
     tailwindcss(),
-    monkey(createMonkeyConfig({
+    deltaComic({
       name: 'bika',
       displayName: '哔咔漫画',
-      supportCoreVersion: '>=0.3.4',
+      supportCoreVersion: '^0.4',
       version: _package.version,
       author: _package.author.name,
       description: _package.description,
       require: ['core'],
-    }, command)),
-    external(createExternalConfig(command))
+    }, command)
   ],
   resolve: {
     alias: {
